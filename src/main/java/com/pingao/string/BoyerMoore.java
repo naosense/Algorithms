@@ -6,6 +6,8 @@ import java.util.List;
 public class BoyerMoore {
     private int[] right;
     private String pat;
+    private int step;
+    private int count;
 
     public BoyerMoore(String pat) {
         this.pat = pat;
@@ -25,19 +27,14 @@ public class BoyerMoore {
     public List<Integer> search(String txt) {
         int N = txt.length();
         int M = pat.length();
-        int skip = 0;
         List<Integer> pos = new ArrayList<>();
-        System.out.println(txt);
-        for (int i = 0; i <= N - M; i += skip) {
-
-            for (int s = 0; s < i; s++) {
-                System.out.print(" ");
-            }
-            System.out.println(pat);
-
+        for (int i = 0, skip = 0; i <= N - M; i += skip) {
+            printStep(pat, i);
             for (int j = M - 1; j >= 0; j--) {
+                count++;
                 if (pat.charAt(j) != txt.charAt(i + j)) {
                     skip = j - right[txt.charAt(i + j)];
+                    if (skip < 1) {skip = 1;}
                     break;
                 }
                 if (j == 0) {
@@ -47,26 +44,33 @@ public class BoyerMoore {
                 }
             }
         }
-
         return pos;
     }
 
+    private void printStep(String pat, int position) {
+        for (int i = 0; i < position; i++) {
+            System.out.print(" ");
+        }
+        System.out.println(pat + " #" + step++ + " " + count);
+    }
+
     public static void main(String[] args) {
-        String pat = "ddada";
-        String txt = "dadasdfsdadfseeeeeeeeeeeeeeeabceeeeeeeeeeeeeeabceeeeeeeeabceeeeddadazzzzzzzzzzz";
+        String pat = "aeeee";
+        String txt = "eeeeeeeeeeeeeeeeeeee";
+        int N = txt.length();
+        int M = pat.length();
         BoyerMoore boyerMoore = new BoyerMoore(pat);
         List<Integer> positions = boyerMoore.search(txt);
-        //int N = txt.length();
-        //
-        //for (int i = 0; i < N; i++) {
-        //    System.out.print("=");
-        //}
-        //System.out.println();
-        //for (Integer p:positions) {
-        //    for (int s = 0; s < p; s++) {
-        //        System.out.print(" ");
-        //    }
-        //    System.out.println(pat);
-        //}
+        System.out.println(txt);
+        StringBuilder mark = new StringBuilder();
+        for (int i = 0; i < N; i++) {
+            if (positions.contains(i)) {
+                mark.append('*');
+            } else {
+                mark.append(' ');
+            }
+        }
+        System.out.println(mark);
+        System.out.println(M + ", " + N);
     }
 }
