@@ -28,45 +28,46 @@ public class Percolation {
 
     // open site (row, col) if it is not open already
     public void open(int row, int col) {
-        if ((row < 1 || row > n) || col < 1 || row > n) {
+        if ((row < 1 || row > n) || (col < 1 || col > n)) {
             throw new IllegalArgumentException("Row and col must between 1 and " + n);
         }
 
-        int self = index(row, col);
-        if (sites[self] == 1) {
+        int index = index(row, col);
+        if (sites[index] == 1) {
             return;
         }
         // connect to top virtual node
-        if (self < n) {
-            uf.union(self, n * n);
+        if (row == 1) {
+            uf.union(index, n * n);
         }
         // connect to bottom virtual node
-        if (self >= n * (n - 1) && self < n * n) {
-            uf.union(self, n * n + 1);
+        if (row == n) {
+            uf.union(index, n * n + 1);
         }
-        sites[self] = 1;
+        sites[index] = 1;
         open++;
-        int left = self - 1;
-        int right = self + 1;
-        int up = self - n;
-        int down = self + n;
-        if (left >= 0 && sites[left] == 1) {
-            uf.union(left, self);
+
+        int left = index - 1;
+        int right = index + 1;
+        int up = index - n;
+        int down = index + n;
+        if (col > 1 && sites[left] == 1) {
+            uf.union(left, index);
         }
-        if (right < n * n && sites[right] == 1) {
-            uf.union(right, self);
+        if (col < n && sites[right] == 1) {
+            uf.union(right, index);
         }
-        if (up >= 0 && sites[up] == 1) {
-            uf.union(up, self);
+        if (row > 1 && sites[up] == 1) {
+            uf.union(up, index);
         }
-        if (down < n * n && sites[down] == 1) {
-            uf.union(down, self);
+        if (row < n && sites[down] == 1) {
+            uf.union(down, index);
         }
     }
 
     // is site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if ((row < 1 || row > n) || col < 1 || row > n) {
+        if ((row < 1 || row > n) || (col < 1 || col > n)) {
             throw new IllegalArgumentException("Row and col must between 1 and " + n);
         }
         return sites[index(row, col)] == 1;
@@ -74,10 +75,11 @@ public class Percolation {
 
     // is site (row, col) full?
     public boolean isFull(int row, int col) {
-        if ((row < 1 || row > n) || col < 1 || row > n) {
+        if ((row < 1 || row > n) || (col < 1 || col > n)) {
             throw new IllegalArgumentException("Row and col must between 1 and " + n);
         }
-        return uf.connected(index(row, col), n * n);
+        int index = index(row, col);
+        return sites[index] == 1 && uf.connected(index, n * n);
     }
 
     // number of open sites
@@ -104,8 +106,12 @@ public class Percolation {
         percolation.open(3, 1);
         percolation.open(4, 1);
         percolation.open(5, 1);
+        percolation.open(5, 1);
+        percolation.open(5, 1);
+        System.out.println(percolation.isFull(3, 1));
         System.out.println(percolation.isOpen(1, 1));
         System.out.println(percolation.isOpen(1, 2));
         System.out.println(percolation.percolates());
+        System.out.println(percolation.isFull(5, 1));
     }
 }
