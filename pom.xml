@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.pingao</groupId>
-    <artifactId>Agorithms</artifactId>
+    <artifactId>Algorithms</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Agorithms</name>
+    <name>Algorithms</name>
     <url>http://maven.apache.org</url>
 
     <properties>

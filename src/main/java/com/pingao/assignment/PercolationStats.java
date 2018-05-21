@@ -28,18 +28,18 @@ public class PercolationStats {
             }
             threshold[i] = percolation.numberOfOpenSites() * 1.0 / (n * n);
         }
-        mean = mean();
-        sd = stddev();
+        mean = StdStats.mean(threshold);
+        sd = StdStats.stddev(threshold);
     }
 
     // sample mean of percolation threshold
     public double mean() {
-        return StdStats.mean(threshold);
+        return mean;
     }
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        return StdStats.stddev(threshold);
+        return sd;
     }
 
     // low  endpoint of 95% confidence interval
@@ -54,7 +54,7 @@ public class PercolationStats {
 
     // test client (described below)
     public static void main(String[] args) {
-        PercolationStats stats = new PercolationStats(2, 10000);
+        PercolationStats stats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         System.out.println("mean = " + stats.mean());
         System.out.println("stddev = " + stats.stddev());
         System.out.println("95% confidence interval = [" + stats.confidenceLo() + ", " + stats.confidenceHi() + "]");

@@ -7,7 +7,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  * Created by pingao on 2018/5/19.
  */
 public class Percolation {
-    private final WeightedQuickUnionUF uf;
+    private final WeightedQuickUnionUF uf1;
+    private final WeightedQuickUnionUF uf2;
     private final int n;
     private final byte[] sites;
     private int open;
@@ -18,19 +19,14 @@ public class Percolation {
             throw new IllegalArgumentException("N must greater than 0");
         }
         this.n = n;
-        this.uf = new WeightedQuickUnionUF(n * n + 2);
+        this.uf1 = new WeightedQuickUnionUF(n * n + 2);
+        this.uf2 = new WeightedQuickUnionUF(n * n + 1);
         this.sites = new byte[n * n];
-        for (int i = 0; i < n * n; i++) {
-            this.sites[i] = 0;
-        }
-        this.open = 0;
     }
 
     // open site (row, col) if it is not open already
     public void open(int row, int col) {
-        if ((row < 1 || row > n) || (col < 1 || col > n)) {
-            throw new IllegalArgumentException("Row and col must between 1 and " + n);
-        }
+        validate(row, col);
 
         int index = index(row, col);
         if (sites[index] == 1) {
@@ -38,11 +34,12 @@ public class Percolation {
         }
         // connect to top virtual node
         if (row == 1) {
-            uf.union(index, n * n);
+            uf1.union(index, n * n);
+            uf2.union(index, n * n);
         }
         // connect to bottom virtual node
         if (row == n) {
-            uf.union(index, n * n + 1);
+            uf1.union(index, n * n + 1);
         }
         sites[index] = 1;
         open++;
@@ -52,34 +49,34 @@ public class Percolation {
         int up = index - n;
         int down = index + n;
         if (col > 1 && sites[left] == 1) {
-            uf.union(left, index);
+            uf1.union(left, index);
+            uf2.union(left, index);
         }
         if (col < n && sites[right] == 1) {
-            uf.union(right, index);
+            uf1.union(right, index);
+            uf2.union(right, index);
         }
         if (row > 1 && sites[up] == 1) {
-            uf.union(up, index);
+            uf1.union(up, index);
+            uf2.union(up, index);
         }
         if (row < n && sites[down] == 1) {
-            uf.union(down, index);
+            uf1.union(down, index);
+            uf2.union(down, index);
         }
     }
 
     // is site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if ((row < 1 || row > n) || (col < 1 || col > n)) {
-            throw new IllegalArgumentException("Row and col must between 1 and " + n);
-        }
+        validate(row, col);
         return sites[index(row, col)] == 1;
     }
 
     // is site (row, col) full?
     public boolean isFull(int row, int col) {
-        if ((row < 1 || row > n) || (col < 1 || col > n)) {
-            throw new IllegalArgumentException("Row and col must between 1 and " + n);
-        }
+        validate(row, col);
         int index = index(row, col);
-        return sites[index] == 1 && uf.connected(index, n * n);
+        return sites[index] == 1 && uf2.connected(index, n * n);
     }
 
     // number of open sites
@@ -89,11 +86,17 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return uf.connected(n * n, n * n + 1);
+        return uf1.connected(n * n, n * n + 1);
     }
 
     private int index(int row, int col) {
         return (row - 1) * n + col - 1;
+    }
+
+    private void validate(int row, int col) {
+        if ((row < 1 || row > n) || (col < 1 || col > n)) {
+            throw new IllegalArgumentException("Row and col must between 1 and " + n);
+        }
     }
 
     // test client (optional)
