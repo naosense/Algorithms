@@ -17,7 +17,7 @@ package com.pingao;
  *
  ******************************************************************************/
 
-import com.pingao.assignment.Percolation;
+import com.pingao.assignment.week1.Percolation;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 
