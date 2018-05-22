@@ -36,7 +36,8 @@ public class Deque<Item> implements Iterable<Item> {
         node.pre = null;
         node.next = first;
         if (last == null) {
-            first = last = node;
+            last = node;
+            first = last;
         } else {
             first.pre = node;
             first = first.pre;
@@ -54,7 +55,8 @@ public class Deque<Item> implements Iterable<Item> {
         node.pre = last;
         node.next = null;
         if (first == null) {
-            last = first = node;
+            first = node;
+            last = first;
         } else {
             last.next = node;
             last = last.next;
@@ -71,7 +73,8 @@ public class Deque<Item> implements Iterable<Item> {
         Item item = first.item;
         Node<Item> next = first.next;
         if (next == null) {
-            first = last = null;  // 只有一个元素
+            last = null;  // 只有一个元素
+            first = null;
         } else {
             next.pre = null;  // 原来这里指向first，现在first删除了，因此要设为null
             first = next;
@@ -88,7 +91,8 @@ public class Deque<Item> implements Iterable<Item> {
         Item item = last.item;
         Node<Item> pre = last.pre;
         if (pre == null) {
-            last = first = null;  // 只有一个元素
+            first = null;  // 只有一个元素
+            last = null;
         } else {
             pre.next = null;  // 原来指向last，last现在被删除了，所以应该设为null
             last = pre;
