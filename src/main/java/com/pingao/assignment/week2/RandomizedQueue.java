@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  * Created by pingao on 2018/5/22.
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    private static final int DEFAULT_CAPACITY = 4;
+    private static final int DEFAULT_CAPACITY = 16;
     private Object[] items;
     private int size;
 
@@ -50,6 +50,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     // remove and return a random item
+    // how to make dequeue in constant time?
     public Item dequeue() {
         if (isEmpty()) {
             throw new NoSuchElementException();
@@ -89,7 +90,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private class RandomizedQueueIterator implements Iterator<Item> {
-        private int[] index = StdRandom.permutation(size);
+        private final int[] index = StdRandom.permutation(size);
         private int p;
 
         @Override
