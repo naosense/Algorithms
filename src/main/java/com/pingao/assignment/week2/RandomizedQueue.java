@@ -40,9 +40,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             items = resize(items.length * 2);
         }
 
-        if (size >= items.length) {
-            System.out.printf("size %d length %d", size, items.length);
-        }
         items[size++] = item;
     }
 
