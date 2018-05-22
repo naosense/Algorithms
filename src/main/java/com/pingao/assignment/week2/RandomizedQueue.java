@@ -94,6 +94,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private class RandomizedQueueIterator implements Iterator<Item> {
+        private int[] index = StdRandom.permutation(size);
         private int p;
 
         @Override
@@ -106,7 +107,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return get(p++);
+            return get(index[p++]);
         }
     }
 
