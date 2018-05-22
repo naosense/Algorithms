@@ -57,14 +57,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         int index = StdRandom.uniform(0, size);
         Item item = get(index);
-        for (int i = index; i < size; i++) {
-            if (i == size - 1) {
-                items[i] = null;
-            } else {
-                items[i] = items[i + 1];
-            }
-        }
-        size--;
+        System.arraycopy(items, index + 1, items, index, size - index - 1);
+        items[--size] = null;
+
         // items.length >= 2 * DEFAULT_CAPACITY确保items的最小容量为DEFAULT_CAPACITY
         // 不会缩小为0
         if (4 * size <= items.length && items.length >= 2 * DEFAULT_CAPACITY) {
