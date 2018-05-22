@@ -40,6 +40,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             items = resize(items.length * 2);
         }
 
+        if (size >= items.length) {
+            System.out.printf("size %d length %d", size, items.length);
+        }
         items[size++] = item;
     }
 
@@ -65,7 +68,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
         }
         size--;
-        if (4 * size <= items.length) {
+        // items.length >= 2 * DEFAULT_CAPACITY确保items的最小容量为DEFAULT_CAPACITY
+        // 不会缩小为0
+        if (4 * size <= items.length && items.length >= 2 * DEFAULT_CAPACITY) {
             items = resize(items.length / 2);
         }
         return item;
@@ -110,10 +115,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // unit testing (optional)
     public static void main(String[] args) {
-        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
-        rq.enqueue(316);
-        rq.isEmpty();
-        rq.enqueue(283);
-        rq.dequeue();
+        RandomizedQueue<Integer> rq = new RandomizedQueue<>();
+        for (int i = 0; i < 1000; i++) {
+            if (rq.isEmpty()) {
+                rq.enqueue(StdRandom.uniform(10));
+            } else {
+                double p = StdRandom.uniform(0.0, 1.0);
+                if (p > 0.8) {
+                    rq.enqueue(StdRandom.uniform(10));
+                } else {
+                    rq.dequeue();
+                }
+            }
+        }
     }
 }
