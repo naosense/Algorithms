@@ -35,13 +35,12 @@ public class Deque<Item> implements Iterable<Item> {
         node.item = item;
         node.pre = null;
         node.next = first;
-        if (first != null) {
-            first.pre = node;
-        }
         if (last == null) {
-            last = node;
+            first = last = node;
+        } else {
+            first.pre = node;
+            first = first.pre;
         }
-        first = node;
         size++;
     }
 
@@ -54,13 +53,13 @@ public class Deque<Item> implements Iterable<Item> {
         node.item = item;
         node.pre = last;
         node.next = null;
-        if (last != null) {
-            last.next = node;
-        }
         if (first == null) {
-            first = node;
+            last = first = node;
+        } else {
+            last.next = node;
+            last = last.next;
         }
-        last = node;
+
         size++;
     }
 
@@ -70,11 +69,14 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NoSuchElementException();
         }
         Item item = first.item;
-        first = first.next;
-        size--;
-        if (isEmpty()) {
-            last = null;
+        Node<Item> next = first.next;
+        if (next == null) {
+            first = last = null;  // 只有一个元素
+        } else {
+            next.pre = null;  // 原来这里指向first，现在first删除了，因此要设为null
+            first = next;
         }
+        size--;
         return item;
     }
 
@@ -84,11 +86,14 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NoSuchElementException();
         }
         Item item = last.item;
-        last = last.pre;
-        size--;
-        if (isEmpty()) {
-            first = null;
+        Node<Item> pre = last.pre;
+        if (pre == null) {
+            last = first = null;  // 只有一个元素
+        } else {
+            pre.next = null;  // 原来指向last，last现在被删除了，所以应该设为null
+            last = pre;
         }
+        size--;
         return item;
     }
 
@@ -127,7 +132,13 @@ public class Deque<Item> implements Iterable<Item> {
     // unit testing (optional)
     public static void main(String[] args) {
         Deque<Integer> deque = new Deque<>();
-        deque.addFirst(1);
+        deque.addLast(1);
+        deque.removeLast();
+        deque.addLast(3);
+        deque.addFirst(4);
+        deque.addLast(5);
+        deque.removeFirst();
+        deque.addFirst(7);
         deque.removeLast();
         deque.forEach(System.out::println);
     }
