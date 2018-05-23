@@ -1,6 +1,7 @@
 package com.pingao.assignment.week2;
 
 import com.pingao.collection.Stack;
+import edu.princeton.cs.algs4.Stopwatch;
 
 import java.util.NoSuchElementException;
 
@@ -30,6 +31,7 @@ public class QueueOf2Stack<E> {
     }
 
     public void enqueue(E e) {
+        // 这样实现的enqueue不是常数时间的啊，coursera上hint我没理解对吗？
         if (e == null) {
             throw new IllegalArgumentException();
         }
@@ -52,11 +54,16 @@ public class QueueOf2Stack<E> {
 
     public static void main(String[] args) {
         QueueOf2Stack<Integer> queue = new QueueOf2Stack<>();
-        queue.enqueue(1);
-        queue.enqueue(2);
-        queue.enqueue(3);
-        System.out.println(queue.dequeue());
-        System.out.println(queue.dequeue());
-        System.out.println(queue.dequeue());
+        Stopwatch time1 = new Stopwatch();
+        for (int i = 0; i < 10000; i++) {
+            queue.enqueue(1);
+        }
+        System.out.println(time1.elapsedTime());
+
+        Stopwatch time2 = new Stopwatch();
+        for (int i = 0; i < 10000; i++) {
+            queue.dequeue();
+        }
+        System.out.println(time2.elapsedTime());
     }
 }
