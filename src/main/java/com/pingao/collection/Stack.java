@@ -69,6 +69,7 @@ public class Stack<E> implements Iterable<E> {
 
     private class StackIterator implements Iterator<E> {
         private int p = size;
+
         @Override
         public boolean hasNext() {
             return p > 0;
@@ -83,9 +84,9 @@ public class Stack<E> implements Iterable<E> {
     public static void main(String[] args) {
         Stack<Integer> stack = new Stack<>();
         stack.push(1);
+        stack.push(2);
         stack.forEach(System.out::println);
         System.out.println(stack.pop());
         System.out.println(stack.pop());
     }
-
 }
