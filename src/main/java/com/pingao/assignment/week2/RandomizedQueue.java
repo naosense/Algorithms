@@ -58,7 +58,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         int index = StdRandom.uniform(0, size);
         Item item = get(index);
-        System.arraycopy(items, index + 1, items, index, size - index - 1);
+        // 因为是随机返回，所以这里不用依次挪动index到size-1所有这些元素，只需要用下标size-1的元素
+        // 填到下标index就可以了
+        items[index] = items[size - 1];
         items[--size] = null;
 
         // items.length >= 2 * DEFAULT_CAPACITY确保items的最小容量为DEFAULT_CAPACITY
