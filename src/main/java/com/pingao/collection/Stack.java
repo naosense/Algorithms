@@ -8,12 +8,12 @@ import java.util.NoSuchElementException;
  * Created by pingao on 2018/5/23.
  */
 public class Stack<E> implements Iterable<E> {
-    private static final int DEFAULT_CAPACITY = 16;
+    private static final Object[] EMPTY_ARRAY = {};
     private Object[] items;
     private int size;
 
     public Stack() {
-        this.items = new Object[DEFAULT_CAPACITY];
+        this.items = EMPTY_ARRAY;
     }
 
     public int size() {
@@ -29,11 +29,19 @@ public class Stack<E> implements Iterable<E> {
             throw new IllegalArgumentException("element must not be null");
         }
 
-        if (size == items.length) {
-            items = resize(items.length * 2);
-        }
+        growIfFull();
 
         items[size++] = e;
+    }
+
+    private void growIfFull() {
+        if (size == items.length) {
+            if (size == 0) {
+                items = resize(1);
+            } else {
+                items = resize(items.length * 2);
+            }
+        }
     }
 
     private Object[] resize(int capacity) {
@@ -50,11 +58,18 @@ public class Stack<E> implements Iterable<E> {
         E e = get(size - 1);
         // 防止内存泄漏
         items[--size] = null;
-
-        if (4 * size <= items.length && items.length >= 2 * DEFAULT_CAPACITY) {
-            items = resize(items.length / 2);
-        }
+        shrinkIfQuarter();
         return e;
+    }
+
+    private void shrinkIfQuarter() {
+        if (size == 0) {
+            items = EMPTY_ARRAY;
+        } else if (4 * size <= items.length) {
+            items = resize(items.length / 2);
+        } else {
+            // ignore
+        }
     }
 
     @SuppressWarnings("unchecked")

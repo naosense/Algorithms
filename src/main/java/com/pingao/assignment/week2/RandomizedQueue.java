@@ -10,13 +10,13 @@ import java.util.NoSuchElementException;
  * Created by pingao on 2018/5/22.
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    private static final int DEFAULT_CAPACITY = 16;
+    private static final Object[] EMPTY_ARRAY = {};
     private Object[] items;
     private int size;
 
     // construct an empty randomized queue
     public RandomizedQueue() {
-        items = new Object[DEFAULT_CAPACITY];
+        items = EMPTY_ARRAY;
     }
 
     // is the randomized queue empty?
@@ -35,12 +35,21 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         }
 
-        // double item array
-        if (size == items.length) {
-            items = resize(items.length * 2);
-        }
+        // 当数组满时将数组加倍
+        growIfFull();
 
         items[size++] = item;
+    }
+
+    private void growIfFull() {
+        if (size == items.length) {
+            // size为0要特殊处理因为0的多少倍都为0
+            if (size == 0) {
+                items = resize(1);
+            } else {
+                items = resize(size * 2);
+            }
+        }
     }
 
     private Object[] resize(int capacity) {
@@ -63,12 +72,19 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         items[index] = items[size - 1];
         items[--size] = null;
 
-        // items.length >= 2 * DEFAULT_CAPACITY确保items的最小容量为DEFAULT_CAPACITY
-        // 不会缩小为0
-        if (4 * size <= items.length && items.length >= 2 * DEFAULT_CAPACITY) {
-            items = resize(items.length / 2);
-        }
+        // 当size为1/4 * length时将数组缩小
+        shrinkIfQuarter();
         return item;
+    }
+
+    private void shrinkIfQuarter() {
+        if (size == 0) {
+            items = EMPTY_ARRAY;
+        } else if (4 * size <= items.length) {
+            items = resize(size * 2);
+        } else {
+            // ignore
+        }
     }
 
     private Item get(int index) {
