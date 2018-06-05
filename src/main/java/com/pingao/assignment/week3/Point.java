@@ -71,7 +71,7 @@ public class Point implements Comparable<Point> {
         } else if (x == that.x) {
             return Double.POSITIVE_INFINITY;
         } else {
-            return (y - that.y) / (x - that.x);
+            return 1.0 * (that.y - y) / (that.x - x);
         }
     }
 
@@ -131,5 +131,6 @@ public class Point implements Comparable<Point> {
      */
     public static void main(String[] args) {
         /* YOUR CODE HERE */
+        System.out.println(new Point(10000, 0).slopeTo(new Point(6000, 7000)));
     }
 }
