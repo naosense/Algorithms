@@ -95,6 +95,16 @@ public class FastCollinearPoints {
         return Arrays.stream(slopes).anyMatch(s -> Double.compare(s, slope) == 0);
     }
 
+    // the number of line segments
+    public int numberOfSegments() {
+        return size;
+    }
+
+    // the line segments
+    public LineSegment[] segments() {
+        return Arrays.copyOf(segments, size);
+    }
+
     public static void main(String[] args) {
 
         // read the n points from a file
@@ -119,22 +129,10 @@ public class FastCollinearPoints {
 
         //print and draw the line segments
         FastCollinearPoints collinear = new FastCollinearPoints(points);
-        StdOut.println(collinear.numberOfSegments());
-
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
             segment.draw();
         }
         StdDraw.show();
-    }
-
-    // the number of line segments
-    public int numberOfSegments() {
-        return size;
-    }
-
-    // the line segments
-    public LineSegment[] segments() {
-        return Arrays.copyOf(segments, size);
     }
 }

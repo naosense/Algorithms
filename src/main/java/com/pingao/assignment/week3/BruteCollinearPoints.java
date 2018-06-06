@@ -20,48 +20,37 @@ public class BruteCollinearPoints {
         validate(points);
         Point[] pointsCopy = points.clone();
         Arrays.sort(pointsCopy);
+        int N = points.length;
 
-        segments = new LineSegment[points.length];
-        int[] ends = new int[points.length];
-        double[] slopes = new double[points.length];
-        for (int i = 0; i < pointsCopy.length; i++) {
+        segments = new LineSegment[N];
+        double[] slopes = new double[N];
+        initSlopes(slopes);
+        for (int start = 0; start < N; start++) {
             int end = 0;
-            for (int j = i + 1; j < pointsCopy.length; j++) {
-                for (int m = j + 1; m < pointsCopy.length; m++) {
-                    for (int n = m + 1; n < pointsCopy.length; n++) {
-                        Point p1 = pointsCopy[i];
-                        Point p2 = pointsCopy[j];
-                        Point p3 = pointsCopy[m];
-                        Point p4 = pointsCopy[n];
+            for (int i = start + 1; i < N; i++) {
+                for (int j = i + 1; j < N; j++) {
+                    for (int k = j + 1; k < N; k++) {
+                        Point p1 = pointsCopy[start];
+                        Point p2 = pointsCopy[i];
+                        Point p4 = pointsCopy[k];
                         double s12 = p1.slopeTo(p2);
-                        double s13 = p1.slopeTo(p3);
                         double s14 = p1.slopeTo(p4);
-                        if (Double.compare(s12, s13) == 0 && Double.compare(s12, s14) == 0) {
-                            end = n;
+                        if (Double.compare(s12, s14) == 0) {
+                            end = k;
                         }
                     }
                 }
             }
 
-            Point p1 = pointsCopy[i];
+            Point p1 = pointsCopy[start];
             Point p2 = pointsCopy[end];
             double slope = p1.slopeTo(p2);
-            if (end != 0 && !isDuplicate(ends, slopes, end, slope)) {
-                ends[size] = end;
-                slopes[size] = slope;
+            if (end != 0 && !isDuplicate(slopes, slope)) {
                 segments[size] = new LineSegment(p1, p2);
+                slopes[size] = slope;
                 size++;
             }
         }
-    }
-
-    private boolean isDuplicate(int[] ends, double[] slopes, int end, double slope) {
-        for (int i = 0; i < size; i++) {
-            if (Double.compare(slopes[i], slope) == 0 && ends[i] == end) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void validate(Point[] points) {
@@ -81,6 +70,16 @@ public class BruteCollinearPoints {
         }
     }
 
+    private void initSlopes(double[] slopes) {
+        for (int i = 0; i < slopes.length; i++) {
+            slopes[i] = Double.NEGATIVE_INFINITY;
+        }
+    }
+
+    private boolean isDuplicate(double[] slopes, double slope) {
+        return Arrays.stream(slopes).anyMatch(s -> Double.compare(s, slope) == 0);
+    }
+
     // the number of line segments
     public int numberOfSegments() {
         return size;
@@ -94,7 +93,7 @@ public class BruteCollinearPoints {
     public static void main(String[] args) {
 
         // read the n points from a file
-        In in = new In(new File("D:\\project\\IdeaProjects\\Algorithms\\src\\test\\resources\\input8.txt"));
+        In in = new In(new File("D:\\project\\Algorithms\\src\\test\\resources\\week3-input8.txt"));
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
@@ -115,7 +114,6 @@ public class BruteCollinearPoints {
 
         //print and draw the line segments
         BruteCollinearPoints collinear = new BruteCollinearPoints(points);
-        StdOut.println(collinear.numberOfSegments());
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
             segment.draw();
