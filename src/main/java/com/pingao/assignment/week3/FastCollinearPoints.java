@@ -22,31 +22,32 @@ public class FastCollinearPoints {
         segments = new LineSegment[N];
         Point[] pointsCopy = points.clone();
 
-        for (int i = 0; i < N; i++) {
-            Point p = points[i];
-            Arrays.sort(pointsCopy, p.slopeOrder());
+        double[] slopes = new double[N];
+        initSlopes(slopes);
 
-            int start = 1;
+        for (Point p : points) {
+            Arrays.sort(pointsCopy, p.slopeOrder().thenComparing(Point::compareTo));
+            int start = 0;
             int end = start + 2;
             while (end < N) {
-                double s1 = p.slopeTo(pointsCopy[end - 2]);
-                double s2 = p.slopeTo(pointsCopy[end - 1]);
+                double s1 = p.slopeTo(pointsCopy[start]);
                 double s3 = p.slopeTo(pointsCopy[end]);
 
-                if (Double.compare(s1, s2) == 0 && Double.compare(s1, s3) == 0) {
+                if (Double.compare(s1, s3) == 0) {
                     end++;
-                    //System.out.println("==: " + start + ", " + end);
+                    if (end == N && end - start > 2) {
+                        addSegIfNotPresent(slopes, s1, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
+                    }
                 } else {
-                    //System.out.println("!=: " + start + ", " + end);
-                    start++;
-                    end = start + 2;
+                    if (end - start > 2) {
+                        addSegIfNotPresent(slopes, s1, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
+                        start = end;
+                        end = start + 2;
+                    } else {
+                        start++;
+                        end = start + 2;
+                    }
                 }
-
-
-            }
-
-            if (end - start > 2) {
-                segments[size++] = new LineSegment(pointsCopy[start] , pointsCopy[end - 1]);
             }
         }
     }
@@ -68,20 +69,36 @@ public class FastCollinearPoints {
         }
     }
 
-    // the number of line segments
-    public int numberOfSegments() {
-        return size;
+    private void initSlopes(double[] slopes) {
+        for (int i = 0; i < slopes.length; i++) {
+            slopes[i] = Double.NEGATIVE_INFINITY;
+        }
     }
 
-    // the line segments
-    public LineSegment[] segments() {
-        return Arrays.copyOf(segments, size);
+    private void addSegIfNotPresent(double[] slopes, double slope, Point start, Point end) {
+        if (!isDuplicate(slopes, slope)) {
+            segments[size] = new LineSegment(start, end);
+            slopes[size] = slope;
+            size++;
+        }
+    }
+
+    private Point min(Point p1, Point p2) {
+        return p1.compareTo(p2) > 0 ? p2 : p1;
+    }
+
+    private Point max(Point p1, Point p2) {
+        return p1.compareTo(p2) > 0 ? p1 : p2;
+    }
+
+    private boolean isDuplicate(double[] slopes, double slope) {
+        return Arrays.stream(slopes).anyMatch(s -> Double.compare(s, slope) == 0);
     }
 
     public static void main(String[] args) {
 
         // read the n points from a file
-        In in = new In(new File("D:\\project\\IdeaProjects\\Algorithms\\src\\test\\resources\\input8.txt"));
+        In in = new In(new File("D:\\project\\Algorithms\\src\\test\\resources\\week3-input8.txt"));
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
@@ -109,5 +126,15 @@ public class FastCollinearPoints {
             segment.draw();
         }
         StdDraw.show();
+    }
+
+    // the number of line segments
+    public int numberOfSegments() {
+        return size;
+    }
+
+    // the line segments
+    public LineSegment[] segments() {
+        return Arrays.copyOf(segments, size);
     }
 }
