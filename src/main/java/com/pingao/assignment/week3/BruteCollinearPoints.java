@@ -19,36 +19,44 @@ public class BruteCollinearPoints {
         validate(points);
         Point[] pointsCopy = points.clone();
         Arrays.sort(pointsCopy);
-        int N = points.length;
+        int len = points.length;
 
-        segments = new LineSegment[N];
-        double[] slopes = new double[N];
+        segments = new LineSegment[len];
+        double[] slopes = new double[len];
         initSlopes(slopes);
-        for (int start = 0; start < N; start++) {
-            int end = 0;
-            for (int i = start + 1; i < N; i++) {
-                for (int j = i + 1; j < N; j++) {
-                    for (int k = j + 1; k < N; k++) {
-                        Point p1 = pointsCopy[start];
-                        Point p2 = pointsCopy[i];
-                        Point p4 = pointsCopy[k];
+        Point[] ends = new Point[len];
+        for (int i = 0; i < len; i++) {
+            int p = 0;
+            for (int j = i + 1; j < len; j++) {
+                for (int k = j + 1; k < len; k++) {
+                    for (int m = k + 1; m < len; m++) {
+                        Point p1 = pointsCopy[i];
+                        Point p2 = pointsCopy[j];
+                        Point p3 = pointsCopy[k];
+                        Point p4 = pointsCopy[m];
                         double s12 = p1.slopeTo(p2);
+                        double s13 = p1.slopeTo(p3);
                         double s14 = p1.slopeTo(p4);
-                        if (Double.compare(s12, s14) == 0) {
-                            end = k;
+                        if (Double.compare(s12, s14) == 0 && Double.compare(s12, s13) == 0) {
+                            p = m;
+                        }
+
+                        if (m == len - 1) {
+                            Point start = pointsCopy[i];
+                            Point end = pointsCopy[p];
+                            double slope = start.slopeTo(end);
+                            if (p != 0 && !isDuplicate(slopes, slope, ends, end)) {
+                                segments[size] = new LineSegment(start, end);
+                                slopes[size] = slope;
+                                ends[size] = end;
+                                size++;
+                            }
                         }
                     }
                 }
             }
 
-            Point p1 = pointsCopy[start];
-            Point p2 = pointsCopy[end];
-            double slope = p1.slopeTo(p2);
-            if (end != 0 && !isDuplicate(slopes, slope)) {
-                segments[size] = new LineSegment(p1, p2);
-                slopes[size] = slope;
-                size++;
-            }
+
         }
     }
 
@@ -75,8 +83,13 @@ public class BruteCollinearPoints {
         }
     }
 
-    private boolean isDuplicate(double[] slopes, double slope) {
-        return Arrays.stream(slopes).anyMatch(s -> Double.compare(s, slope) == 0);
+    private boolean isDuplicate(double[] slopes, double slope, Point[] ends, Point end) {
+        for (int i = 0; i < size; i++) {
+            if (Double.compare(slopes[i], slope) == 0 && ends[i].compareTo(end) == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // the number of line segments
@@ -110,7 +123,7 @@ public class BruteCollinearPoints {
         }
         StdDraw.show();
 
-        //print and draw the line segments
+        // print and draw the line segments
         BruteCollinearPoints collinear = new BruteCollinearPoints(points);
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);

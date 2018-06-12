@@ -1,45 +1,47 @@
 package com.pingao.assignment.week3;
 
+
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.ResizingArrayQueue;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 
 /**
  * Created by pingao on 2018/6/3.
  */
 public class FastCollinearPoints {
-    private final LineSegment[] segments;
-    private int size;
+    private final ResizingArrayQueue<LineSegment> segments;
 
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points) {
         validate(points);
-        int N = points.length;
-        segments = new LineSegment[N];
+        int len = points.length;
+        segments = new ResizingArrayQueue<>();
         Point[] pointsCopy = points.clone();
 
-        double[] slopes = new double[N];
-        initSlopes(slopes);
+        ResizingArrayQueue<Double> slopes = new ResizingArrayQueue<>();
+        ResizingArrayQueue<Point> ends = new ResizingArrayQueue<>();
 
         for (Point p : points) {
             Arrays.sort(pointsCopy, p.slopeOrder().thenComparing(Point::compareTo));
             int start = 0;
             int end = start + 2;
-            while (end < N) {
+            while (end < len) {
                 double s1 = p.slopeTo(pointsCopy[start]);
                 double s3 = p.slopeTo(pointsCopy[end]);
 
                 if (Double.compare(s1, s3) == 0) {
                     end++;
-                    if (end == N && end - start > 2) {
-                        addSegIfNotPresent(slopes, s1, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
+                    if (end == len && end - start > 2) {
+                        addSegIfNotPresent(slopes, s1, ends, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
                     }
                 } else {
                     if (end - start > 2) {
-                        addSegIfNotPresent(slopes, s1, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
+                        addSegIfNotPresent(slopes, s1, ends, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
                         start = end;
                         end = start + 2;
                     } else {
@@ -68,17 +70,11 @@ public class FastCollinearPoints {
         }
     }
 
-    private void initSlopes(double[] slopes) {
-        for (int i = 0; i < slopes.length; i++) {
-            slopes[i] = Double.NEGATIVE_INFINITY;
-        }
-    }
-
-    private void addSegIfNotPresent(double[] slopes, double slope, Point start, Point end) {
-        if (!isDuplicate(slopes, slope)) {
-            segments[size] = new LineSegment(start, end);
-            slopes[size] = slope;
-            size++;
+    private void addSegIfNotPresent(ResizingArrayQueue<Double> slopes, double slope, ResizingArrayQueue<Point> ends, Point start, Point end) {
+        if (!isDuplicate(slopes, slope, ends, end)) {
+            slopes.enqueue(slope);
+            ends.enqueue(end);
+            segments.enqueue(new LineSegment(start, end));
         }
     }
 
@@ -90,18 +86,32 @@ public class FastCollinearPoints {
         return p1.compareTo(p2) > 0 ? p1 : p2;
     }
 
-    private boolean isDuplicate(double[] slopes, double slope) {
-        return Arrays.stream(slopes).anyMatch(s -> Double.compare(s, slope) == 0);
+    private boolean isDuplicate(ResizingArrayQueue<Double> slopes, double slope, ResizingArrayQueue<Point> ends, Point end) {
+        Iterator<Double> it1 = slopes.iterator();
+        Iterator<Point> it2 = ends.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            double s = it1.next();
+            Point e = it2.next();
+            if (Double.compare(s, slope) == 0 && e.compareTo(end) == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // the number of line segments
     public int numberOfSegments() {
-        return size;
+        return segments.size();
     }
 
     // the line segments
     public LineSegment[] segments() {
-        return Arrays.copyOf(segments, size);
+        LineSegment[] copy = new LineSegment[segments.size()];
+        int i = 0;
+        for (LineSegment segment : segments) {
+            copy[i++] = segment;
+        }
+        return copy;
     }
 
     public static void main(String[] args) {
@@ -126,7 +136,7 @@ public class FastCollinearPoints {
         }
         StdDraw.show();
 
-        //print and draw the line segments
+        // print and draw the line segments
         FastCollinearPoints collinear = new FastCollinearPoints(points);
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
