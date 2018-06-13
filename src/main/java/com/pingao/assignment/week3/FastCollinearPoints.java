@@ -21,9 +21,10 @@ public class FastCollinearPoints {
         segments = new ResizingArrayQueue<>();
         Point[] pointsCopy = points.clone();
 
-        for (Point p : points) {
-            Arrays.sort(pointsCopy, p.slopeOrder().thenComparing(Point::compareTo));
-            int index1 = 0;
+        for (int i = 0; i < len; i++) {
+            Point p = pointsCopy[i];
+            Arrays.sort(pointsCopy, i + 1, len, p.slopeOrder().thenComparing(Point::compareTo));
+            int index1 = i + 1;
             int index2 = index1 + 2;
             while (index2 < len) {
                 Point p1 = pointsCopy[index1];
@@ -33,12 +34,12 @@ public class FastCollinearPoints {
 
                 if (Double.compare(s1, s2) == 0) {
                     index2++;
-                    if (index2 == len && index2 - index1 > 2 && p.compareTo(p1) < 0) {
-                        addSeg(p, pointsCopy[index2 - 1]);
+                    if (index2 == len && index2 - index1 > 2) {
+                        addSeg(min(p, p1), max(p, pointsCopy[index2 - 1]));
                     }
                 } else {
-                    if (index2 - index1 > 2 && p.compareTo(p1) < 0) {
-                        addSeg(p, pointsCopy[index2 - 1]);
+                    if (index2 - index1 > 2) {
+                        addSeg(min(p, p1), max(p, pointsCopy[index2 - 1]));
                         index1 = index2;
                         index2 = index1 + 2;
                     } else {
@@ -68,7 +69,15 @@ public class FastCollinearPoints {
     }
 
     private void addSeg(Point start, Point end) {
-            segments.enqueue(new LineSegment(start, end));
+        segments.enqueue(new LineSegment(start, end));
+    }
+
+    private Point min(Point p1, Point p2) {
+        return p1.compareTo(p2) > 0 ? p2 : p1;
+    }
+
+    private Point max(Point p1, Point p2) {
+        return p1.compareTo(p2) > 0 ? p1 : p2;
     }
 
     // the number of line segments
