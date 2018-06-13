@@ -1,13 +1,11 @@
 package com.pingao.assignment.week3;
 
-
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.ResizingArrayQueue;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 
 /**
@@ -23,30 +21,29 @@ public class FastCollinearPoints {
         segments = new ResizingArrayQueue<>();
         Point[] pointsCopy = points.clone();
 
-        ResizingArrayQueue<Double> slopes = new ResizingArrayQueue<>();
-        ResizingArrayQueue<Point> ends = new ResizingArrayQueue<>();
-
         for (Point p : points) {
             Arrays.sort(pointsCopy, p.slopeOrder().thenComparing(Point::compareTo));
-            int start = 0;
-            int end = start + 2;
-            while (end < len) {
-                double s1 = p.slopeTo(pointsCopy[start]);
-                double s3 = p.slopeTo(pointsCopy[end]);
+            int index1 = 0;
+            int index2 = index1 + 2;
+            while (index2 < len) {
+                Point p1 = pointsCopy[index1];
+                Point p2 = pointsCopy[index2];
+                double s1 = p.slopeTo(p1);
+                double s2 = p.slopeTo(p2);
 
-                if (Double.compare(s1, s3) == 0) {
-                    end++;
-                    if (end == len && end - start > 2) {
-                        addSegIfNotPresent(slopes, s1, ends, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
+                if (Double.compare(s1, s2) == 0) {
+                    index2++;
+                    if (index2 == len && index2 - index1 > 2 && p.compareTo(p1) < 0) {
+                        addSeg(p, pointsCopy[index2 - 1]);
                     }
                 } else {
-                    if (end - start > 2) {
-                        addSegIfNotPresent(slopes, s1, ends, min(p, pointsCopy[start]), max(p, pointsCopy[end - 1]));
-                        start = end;
-                        end = start + 2;
+                    if (index2 - index1 > 2 && p.compareTo(p1) < 0) {
+                        addSeg(p, pointsCopy[index2 - 1]);
+                        index1 = index2;
+                        index2 = index1 + 2;
                     } else {
-                        start++;
-                        end = start + 2;
+                        index1++;
+                        index2 = index1 + 2;
                     }
                 }
             }
@@ -70,33 +67,8 @@ public class FastCollinearPoints {
         }
     }
 
-    private void addSegIfNotPresent(ResizingArrayQueue<Double> slopes, double slope, ResizingArrayQueue<Point> ends, Point start, Point end) {
-        if (!isDuplicate(slopes, slope, ends, end)) {
-            slopes.enqueue(slope);
-            ends.enqueue(end);
+    private void addSeg(Point start, Point end) {
             segments.enqueue(new LineSegment(start, end));
-        }
-    }
-
-    private Point min(Point p1, Point p2) {
-        return p1.compareTo(p2) > 0 ? p2 : p1;
-    }
-
-    private Point max(Point p1, Point p2) {
-        return p1.compareTo(p2) > 0 ? p1 : p2;
-    }
-
-    private boolean isDuplicate(ResizingArrayQueue<Double> slopes, double slope, ResizingArrayQueue<Point> ends, Point end) {
-        Iterator<Double> it1 = slopes.iterator();
-        Iterator<Point> it2 = ends.iterator();
-        while (it1.hasNext() && it2.hasNext()) {
-            double s = it1.next();
-            Point e = it2.next();
-            if (Double.compare(s, slope) == 0 && e.compareTo(end) == 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
     // the number of line segments
