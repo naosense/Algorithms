@@ -1,18 +1,19 @@
 package com.pingao.assignment.week3;
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.ResizingArrayQueue;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 
 /**
  * Created by pingao on 2018/5/31.
  */
 public class BruteCollinearPoints {
-    private final LineSegment[] segments;
-    private int size;
+    private final ResizingArrayQueue<LineSegment> segments;
 
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
@@ -21,10 +22,9 @@ public class BruteCollinearPoints {
         Arrays.sort(pointsCopy);
         int len = points.length;
 
-        segments = new LineSegment[len];
-        double[] slopes = new double[len];
-        initSlopes(slopes);
-        Point[] ends = new Point[len];
+        segments = new ResizingArrayQueue<>();
+        ResizingArrayQueue<Double> slopes = new ResizingArrayQueue<>();
+        ResizingArrayQueue<Point> ends = new ResizingArrayQueue<>();
         for (int i = 0; i < len; i++) {
             int p = 0;
             for (int j = i + 1; j < len; j++) {
@@ -46,17 +46,14 @@ public class BruteCollinearPoints {
                             Point end = pointsCopy[p];
                             double slope = start.slopeTo(end);
                             if (p != 0 && !isDuplicate(slopes, slope, ends, end)) {
-                                segments[size] = new LineSegment(start, end);
-                                slopes[size] = slope;
-                                ends[size] = end;
-                                size++;
+                                segments.enqueue(new LineSegment(start, end));
+                                slopes.enqueue(slope);
+                                ends.enqueue(end);
                             }
                         }
                     }
                 }
             }
-
-
         }
     }
 
@@ -67,10 +64,13 @@ public class BruteCollinearPoints {
 
         // make sure not null and not equal
         for (int i = 0; i < points.length; i++) {
+            Point p1 = points[i];
+            if (p1 == null) {
+                throw new IllegalArgumentException();
+            }
             for (int j = i + 1; j < points.length; j++) {
-                Point p1 = points[i];
                 Point p2 = points[j];
-                if (p1 == null || p2 == null || p1.compareTo(p2) == 0) {
+                if (p2 == null || p1.compareTo(p2) == 0) {
                     throw new IllegalArgumentException();
                 }
             }
@@ -83,9 +83,13 @@ public class BruteCollinearPoints {
         }
     }
 
-    private boolean isDuplicate(double[] slopes, double slope, Point[] ends, Point end) {
-        for (int i = 0; i < size; i++) {
-            if (Double.compare(slopes[i], slope) == 0 && ends[i].compareTo(end) == 0) {
+    private boolean isDuplicate(ResizingArrayQueue<Double> slopes, double slope, ResizingArrayQueue<Point> ends, Point end) {
+        Iterator<Double> it1 = slopes.iterator();
+        Iterator<Point> it2 = ends.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            double s = it1.next();
+            Point e = it2.next();
+            if (Double.compare(s, slope) == 0 && e.compareTo(end) == 0) {
                 return true;
             }
         }
@@ -94,12 +98,17 @@ public class BruteCollinearPoints {
 
     // the number of line segments
     public int numberOfSegments() {
-        return size;
+        return segments.size();
     }
 
     // the line segments
     public LineSegment[] segments() {
-        return Arrays.copyOf(segments, size);
+        LineSegment[] copy = new LineSegment[segments.size()];
+        int i = 0;
+        for (LineSegment segment : segments) {
+            copy[i++] = segment;
+        }
+        return copy;
     }
 
     public static void main(String[] args) {
