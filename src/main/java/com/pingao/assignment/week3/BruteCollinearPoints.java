@@ -77,12 +77,6 @@ public class BruteCollinearPoints {
         }
     }
 
-    private void initSlopes(double[] slopes) {
-        for (int i = 0; i < slopes.length; i++) {
-            slopes[i] = Double.NEGATIVE_INFINITY;
-        }
-    }
-
     private boolean isDuplicate(ResizingArrayQueue<Double> slopes, double slope, ResizingArrayQueue<Point> ends, Point end) {
         Iterator<Double> it1 = slopes.iterator();
         Iterator<Point> it2 = ends.iterator();
