@@ -4,7 +4,6 @@ import edu.princeton.cs.algs4.ResizingArrayQueue;
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 
 /**
@@ -129,8 +128,8 @@ public class Board {
             int n = dimension();
 
             // find empty
-            int x = 0;
-            int y = 0;
+            int x = -1;
+            int y = -1;
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     if (blocks[i][j] == 0) {
@@ -139,7 +138,7 @@ public class Board {
                         break;
                     }
                 }
-                if (x != 0 && y != 0) {
+                if (x != -1) {
                     break;
                 }
             }
@@ -173,12 +172,7 @@ public class Board {
             }
         }
 
-        return new Iterable<Board>() {
-            @Override
-            public Iterator<Board> iterator() {
-                return neighbors.iterator();
-            }
-        };
+        return neighbors;
     }
 
     private boolean isRange(int x) {
@@ -193,13 +187,13 @@ public class Board {
             for (int j = 0; j < n; j++) {
                 if (blocks[i][j] == 0) {
                     if (j == n - 1) {
-                        sb.append("%n");
+                        sb.append("\n");
                     } else {
-                        sb.append("  ");
+                        sb.append("0 ");
                     }
                 } else {
                     if (j == n - 1) {
-                        sb.append(blocks[i][j]).append("%n");
+                        sb.append(blocks[i][j]).append("\n");
                     } else {
                         sb.append(blocks[i][j]).append(' ');
                     }
