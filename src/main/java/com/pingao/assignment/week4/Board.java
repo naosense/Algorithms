@@ -91,9 +91,17 @@ public class Board {
                 break;
             }
         }
-        int[][] blocksCopy = blocks.clone();
-        swap(i1, j1, i2, j2, blocksCopy);
-        return new Board(blocksCopy);
+        int[][] bl = deepCopy(blocks);
+        swap(i1, j1, i2, j2, bl);
+        return new Board(bl);
+    }
+
+    private int[][] deepCopy(int[][] a) {
+        int[][] copy = new int[a.length][];
+        for (int i = 0; i < a.length; i++) {
+            copy[i] = a[i].clone();
+        }
+        return copy;
     }
 
     private void swap(int i1, int j1, int i2, int j2, int[][] blocks) {
@@ -145,28 +153,28 @@ public class Board {
 
             // top
             if (isRange(x - 1)) {
-                int[][] bl = blocks.clone();
+                int[][] bl = deepCopy(blocks);
                 swap(x, y, x - 1, y, bl);
                 neighbors.enqueue(new Board(bl));
             }
 
             // left
             if (isRange(y - 1)) {
-                int[][] bl = blocks.clone();
+                int[][] bl = deepCopy(blocks);
                 swap(x, y, x, y - 1, bl);
                 neighbors.enqueue(new Board(bl));
             }
 
             // bottom
             if (isRange(x + 1)) {
-                int[][] bl = blocks.clone();
+                int[][] bl = deepCopy(blocks);
                 swap(x, y, x + 1, y, bl);
                 neighbors.enqueue(new Board(bl));
             }
 
             // right
             if (isRange(y + 1)) {
-                int[][] bl = blocks.clone();
+                int[][] bl = deepCopy(blocks);
                 swap(x, y, x, y + 1, bl);
                 neighbors.enqueue(new Board(bl));
             }
@@ -187,7 +195,7 @@ public class Board {
             for (int j = 0; j < n; j++) {
                 if (blocks[i][j] == 0) {
                     if (j == n - 1) {
-                        sb.append("\n");
+                        sb.append("0\n");
                     } else {
                         sb.append("0 ");
                     }

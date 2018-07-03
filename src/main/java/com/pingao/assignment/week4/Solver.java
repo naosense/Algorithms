@@ -22,9 +22,7 @@ public class Solver {
         Node current = pq.delMin();
         while (!current.board.isGoal()) {
             for (Board n : current.board.neighbors()) {
-                System.out.println(n);
                 if (current.predecessor == null || !n.equals(current.predecessor.board)) {
-                    System.out.println(pq.size());
                     pq.insert(new Node(current, n, current.move + 1));
                 }
             }
@@ -42,7 +40,7 @@ public class Solver {
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        return solution.size();
+        return solution.size() - 1;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
@@ -63,7 +61,14 @@ public class Solver {
 
         @Override
         public int compareTo(Node o) {
-            return Integer.compare(board.manhattan() + move, o.board.manhattan() + o.move);
+            int priority1 = board.manhattan() + move;
+            int priority2 = o.board.manhattan() + o.move;
+            int compare = Integer.compare(priority1, priority2);
+            if (compare == 0) {
+                return Integer.compare(board.manhattan(), o.board.manhattan());
+            } else {
+                return compare;
+            }
         }
     }
 
