@@ -52,7 +52,7 @@ public class Solver {
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        return solution.size() - 1;
+        return isSolvable() ? solution.size() - 1 : -1;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
@@ -87,7 +87,7 @@ public class Solver {
     // solve a slider puzzle (given below)
     public static void main(String[] args) {
         // create initial board from file
-        In in = new In(System.getProperty("user.dir") + "/src/test/resources/week4-unsolve.txt");
+        In in = new In(System.getProperty("user.dir") + "/src/test/resources/week4-puzzle04.txt");
         int n = in.readInt();
         int[][] blocks = new int[n][n];
         for (int i = 0; i < n; i++) {

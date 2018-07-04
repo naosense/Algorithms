@@ -56,7 +56,7 @@ public class Board {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (blocks[i][j] != 0 && blocks[i][j] != i * n + j + 1) {
-                    int i2 = blocks[i][j] / n;
+                    int i2 = (blocks[i][j] - 1) / n;
                     int j2 = blocks[i][j] - i2 * n - 1;
                     manhattan += Math.abs(i - i2) + Math.abs(j - j2);
                 }
@@ -193,18 +193,10 @@ public class Board {
         int n = dimension();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (blocks[i][j] == 0) {
-                    if (j == n - 1) {
-                        sb.append("0\n");
-                    } else {
-                        sb.append("0 ");
-                    }
+                if (j == n - 1) {
+                    sb.append(blocks[i][j]).append("\n");
                 } else {
-                    if (j == n - 1) {
-                        sb.append(blocks[i][j]).append("\n");
-                    } else {
-                        sb.append(blocks[i][j]).append(' ');
-                    }
+                    sb.append(blocks[i][j]).append(' ');
                 }
             }
         }
