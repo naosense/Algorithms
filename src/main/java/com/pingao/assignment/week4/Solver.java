@@ -69,7 +69,7 @@ public class Solver {
         private final Node predecessor;
         private final Board board;
         private final int move;
-        private int manhattan;
+        private final int manhattan;
 
         public Node(Node predecessor, Board board, int move, int manhattan) {
             this.predecessor = predecessor;
