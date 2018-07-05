@@ -1,6 +1,6 @@
 package com.pingao.assignment.week4;
 
-import edu.princeton.cs.algs4.ResizingArrayQueue;
+import edu.princeton.cs.algs4.Queue;
 
 import java.util.Arrays;
 
@@ -12,7 +12,7 @@ public class Board {
     private final int[][] blocks;
     private int hamming;
     private int manhattan;
-    private final ResizingArrayQueue<Board> neighbors;
+    private final Queue<Board> neighbors;
 
     // construct a board from an n-by-n array of blocks
     public Board(int[][] blocks) {
@@ -21,7 +21,7 @@ public class Board {
         }
 
         this.blocks = blocks;
-        this.neighbors = new ResizingArrayQueue<>();
+        this.neighbors = new Queue<>();
     }
 
     // (where blocks[i][j] = block in row i, column j)

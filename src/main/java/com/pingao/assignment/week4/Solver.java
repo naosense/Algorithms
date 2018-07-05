@@ -2,7 +2,7 @@ package com.pingao.assignment.week4;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.ResizingArrayStack;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 
@@ -10,7 +10,7 @@ import edu.princeton.cs.algs4.StdOut;
  * Created by pingao on 2018/7/1.
  */
 public class Solver {
-    private ResizingArrayStack<Board> solution;
+    private Stack<Board> solution;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -37,7 +37,7 @@ public class Solver {
         }
 
         if (current1.board.isGoal()) {
-            solution = new ResizingArrayStack<>();
+            solution = new Stack<>();
             solution.push(current1.board);
             for (Node pre = current1.predecessor; pre != null; pre = pre.predecessor) {
                 solution.push(pre.board);
