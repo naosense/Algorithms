@@ -9,7 +9,7 @@ import java.util.Arrays;
  * Created by pingao on 2018/7/1.
  */
 public class Board {
-    private final int[][] blocks;
+    private final short[][] blocks;
     private int manhattan;
     private final Queue<Board> neighbors;
 
@@ -19,7 +19,7 @@ public class Board {
             throw new IllegalArgumentException();
         }
 
-        this.blocks = deepCopy(blocks);
+        this.blocks = ints2shorts(blocks);
         this.manhattan = -1;
         this.neighbors = new Queue<>();
     }
@@ -91,15 +91,27 @@ public class Board {
             }
         }
 
-        int[][] bl = deepCopy(blocks);
+        int[][] bl = shorts2ints(blocks);
         swap(i1, j1, i2, j2, bl);
         return new Board(bl);
     }
 
-    private int[][] deepCopy(int[][] a) {
-        int[][] copy = new int[a.length][];
+    private short[][] ints2shorts(int[][] a) {
+        short[][] copy = new short[a.length][a.length];
         for (int i = 0; i < a.length; i++) {
-            copy[i] = a[i].clone();
+            for (int j = 0; j < a.length; j++) {
+                copy[i][j] = (short) a[i][j];
+            }
+        }
+        return copy;
+    }
+
+    private int[][] shorts2ints(short[][] a) {
+        int[][] copy = new int[a.length][a.length];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                copy[i][j] = a[i][j];
+            }
         }
         return copy;
     }
@@ -145,28 +157,28 @@ public class Board {
 
             // top
             if (isRange(x - 1)) {
-                int[][] bl = deepCopy(blocks);
+                int[][] bl = shorts2ints(blocks);
                 swap(x, y, x - 1, y, bl);
                 neighbors.enqueue(new Board(bl));
             }
 
             // left
             if (isRange(y - 1)) {
-                int[][] bl = deepCopy(blocks);
+                int[][] bl = shorts2ints(blocks);
                 swap(x, y, x, y - 1, bl);
                 neighbors.enqueue(new Board(bl));
             }
 
             // bottom
             if (isRange(x + 1)) {
-                int[][] bl = deepCopy(blocks);
+                int[][] bl = shorts2ints(blocks);
                 swap(x, y, x + 1, y, bl);
                 neighbors.enqueue(new Board(bl));
             }
 
             // right
             if (isRange(y + 1)) {
-                int[][] bl = deepCopy(blocks);
+                int[][] bl = shorts2ints(blocks);
                 swap(x, y, x, y + 1, bl);
                 neighbors.enqueue(new Board(bl));
             }
