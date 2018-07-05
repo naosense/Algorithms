@@ -13,7 +13,7 @@ public class Board {
     private final int[][] blocks;
     private int hamming;
     private int manhattan;
-    private ResizingArrayQueue<Board> neighbors;
+    private final ResizingArrayQueue<Board> neighbors;
 
     // construct a board from an n-by-n array of blocks
     public Board(int[][] blocks) {
@@ -185,12 +185,13 @@ public class Board {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int n = dimension();
+        sb.append(n).append("\n");
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (j == n - 1) {
                     sb.append(blocks[i][j]).append("\n");
                 } else {
-                    sb.append(blocks[i][j]).append(' ');
+                    sb.append(String.format("%2d", blocks[i][j])).append(' ');
                 }
             }
         }
