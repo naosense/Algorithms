@@ -20,20 +20,21 @@ public class Solver {
 
         MinPQ<Node> pq1 = new MinPQ<>();
         MinPQ<Node> pq2 = new MinPQ<>();
-        pq1.insert(new Node(null, initial, 1));
-        pq2.insert(new Node(null, initial.twin(), 1));
+        pq1.insert(new Node(null, initial, 1, initial.manhattan()));
+        Board twin = initial.twin();
+        pq2.insert(new Node(null, twin, 1, twin.manhattan()));
 
         Node current1 = pq1.delMin();
         Node current2 = pq2.delMin();
         while (!current1.board.isGoal() && !current2.board.isGoal()) {
             for (Board n : current1.board.neighbors()) {
                 if (current1.predecessor == null || !n.equals(current1.predecessor.board)) {
-                    pq1.insert(new Node(current1, n, current1.move + 1));
+                    pq1.insert(new Node(current1, n, current1.move + 1, n.manhattan()));
                 }
             }
             for (Board n : current2.board.neighbors()) {
                 if (current2.predecessor == null || !n.equals(current2.predecessor.board)) {
-                    pq2.insert(new Node(current2, n, current2.move + 1));
+                    pq2.insert(new Node(current2, n, current2.move + 1, n.manhattan()));
                 }
             }
             current1 = pq1.delMin();
@@ -68,20 +69,22 @@ public class Solver {
         private final Node predecessor;
         private final Board board;
         private final int move;
+        private int manhattan;
 
-        public Node(Node predecessor, Board board, int move) {
+        public Node(Node predecessor, Board board, int move, int manhattan) {
             this.predecessor = predecessor;
             this.board = board;
             this.move = move;
+            this.manhattan = manhattan;
         }
 
         @Override
         public int compareTo(Node o) {
-            int priority1 = board.manhattan() + move;
-            int priority2 = o.board.manhattan() + o.move;
+            int priority1 = manhattan + move;
+            int priority2 = o.manhattan + o.move;
             int compare = Integer.compare(priority1, priority2);
             if (compare == 0) {
-                return Integer.compare(board.manhattan(), o.board.manhattan());
+                return Integer.compare(manhattan, o.manhattan);
             } else {
                 return compare;
             }
