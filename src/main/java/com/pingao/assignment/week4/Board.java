@@ -1,7 +1,6 @@
 package com.pingao.assignment.week4;
 
 import edu.princeton.cs.algs4.ResizingArrayQueue;
-import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
 
@@ -73,24 +72,25 @@ public class Board {
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
         int n = dimension();
-        int i1 = StdRandom.uniform(n);
-        int j1 = StdRandom.uniform(n);
-        int i2 = StdRandom.uniform(n);
-        int j2 = StdRandom.uniform(n);
-        while (true) {
-            if (blocks[i1][j1] == 0) {
-                i1 = StdRandom.uniform(n);
-                j1 = StdRandom.uniform(n);
-            } else if (blocks[i2][j2] == 0) {
-                i2 = StdRandom.uniform(n);
-                j2 = StdRandom.uniform(n);
-            } else if (i1 == i2 && j1 == j2) {
-                i1 = StdRandom.uniform(n);
-                j1 = StdRandom.uniform(n);
-            } else {
-                break;
+        int i1 = -1, j1 = -1;
+        int i2 = -1, j2 = -1;
+        out:
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (blocks[i][j] != 0) {
+                    if (i1 == -1) {
+                        i1 = i;
+                        j1 = j;
+                    } else if (i2 == -1) {
+                        i2 = i;
+                        j2 = j;
+                    } else {
+                        break out;
+                    }
+                }
             }
         }
+
         int[][] bl = deepCopy(blocks);
         swap(i1, j1, i2, j2, bl);
         return new Board(bl);
@@ -132,16 +132,14 @@ public class Board {
             // find empty
             int x = -1;
             int y = -1;
+            out:
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     if (blocks[i][j] == 0) {
                         x = i;
                         y = j;
-                        break;
+                        break out;
                     }
-                }
-                if (x != -1) {
-                    break;
                 }
             }
 
