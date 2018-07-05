@@ -118,13 +118,7 @@ public class Board {
 
         if (y instanceof Board) {
             Board that = (Board) y;
-            int n = dimension();
-            for (int i = 0; i < n; i++) {
-                if (!Arrays.equals(this.blocks[i], that.blocks[i])) {
-                    return false;
-                }
-            }
-            return true;
+            return Arrays.deepEquals(blocks, that.blocks);
         }
 
         return false;
