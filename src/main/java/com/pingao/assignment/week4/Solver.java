@@ -14,6 +14,10 @@ public class Solver {
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
+        if (initial == null) {
+            throw new IllegalArgumentException();
+        }
+
         MinPQ<Node> pq1 = new MinPQ<>();
         MinPQ<Node> pq2 = new MinPQ<>();
         pq1.insert(new Node(null, initial, 1));

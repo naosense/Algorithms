@@ -20,7 +20,7 @@ public class Board {
             throw new IllegalArgumentException();
         }
 
-        this.blocks = blocks;
+        this.blocks = deepCopy(blocks);
         this.neighbors = new Queue<>();
     }
 
@@ -194,10 +194,5 @@ public class Board {
             }
         }
         return sb.toString();
-    }
-
-    // unit tests (not graded)
-    public static void main(String[] args) {
-
     }
 }
