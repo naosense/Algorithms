@@ -10,7 +10,6 @@ import java.util.Arrays;
  */
 public class Board {
     private final int[][] blocks;
-    private int hamming;
     private int manhattan;
     private final Queue<Board> neighbors;
 
@@ -21,6 +20,7 @@ public class Board {
         }
 
         this.blocks = deepCopy(blocks);
+        this.manhattan = -1;
         this.neighbors = new Queue<>();
     }
 
@@ -32,9 +32,7 @@ public class Board {
 
     // number of blocks out of place
     public int hamming() {
-        if (hamming > 0) {
-            return hamming;
-        }
+        int hamming = 0;
         int n = dimension();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -48,25 +46,27 @@ public class Board {
 
     // sum of Manhattan distances between blocks and goal
     public int manhattan() {
-        if (manhattan > 0) {
+        if (manhattan >= 0) {
             return manhattan;
         }
+        int distance = 0;
         int n = dimension();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (blocks[i][j] != 0 && blocks[i][j] != i * n + j + 1) {
                     int i2 = (blocks[i][j] - 1) / n;
                     int j2 = blocks[i][j] - i2 * n - 1;
-                    manhattan += Math.abs(i - i2) + Math.abs(j - j2);
+                    distance += Math.abs(i - i2) + Math.abs(j - j2);
                 }
             }
         }
+        manhattan = distance;
         return manhattan;
     }
 
     // is this board the goal board?
     public boolean isGoal() {
-        return hamming() == 0;
+        return manhattan() == 0;
     }
 
     // a board that is obtained by exchanging any pair of blocks
