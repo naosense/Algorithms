@@ -106,18 +106,7 @@ public class KdTree {
             return;
         }
 
-        StdDraw.setPenRadius(0.01);
-        StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.point(n.location.x(), n.location.y());
-        if (depth % K == 0) {
-            StdDraw.setPenRadius();
-            StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.line(n.location.x(), 0, n.location.x(), 1);
-        } else {
-            StdDraw.setPenRadius();
-            StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.line(0, n.location.y(), 1, n.location.y());
-        }
         draw(n.left, depth + 1);
         draw(n.right, depth + 1);
     }
@@ -152,10 +141,12 @@ public class KdTree {
         }
     }
 
+    // left or bottom
     private boolean isLeft(RectHV rect, Point2D p, int depth) {
         return depth % K == 0 ? rect.xmax() < p.x() : rect.ymax() < p.y();
     }
 
+    // right or top
     private boolean isRight(RectHV rect, Point2D p, int depth) {
         return depth % K == 0 ? rect.xmin() > p.x() : rect.ymin() > p.y();
     }
@@ -166,31 +157,31 @@ public class KdTree {
             throw new IllegalArgumentException();
         }
 
-        Nearest nearest = new Nearest(Double.POSITIVE_INFINITY, null);
+        DistanceCache nearest = new DistanceCache(Double.POSITIVE_INFINITY, null);
         nearest(root, p, 0, nearest);
         return nearest.point;
     }
 
-    private void nearest(Node n, Point2D p, int depth, Nearest nearest) {
+    private void nearest(Node n, Point2D p, int depth, DistanceCache cache) {
         if (n == null) {
             return;
         }
 
         double distance = p.distanceSquaredTo(n.location);
-        if (nearest.distance > distance) {
-            nearest.distance = distance;
-            nearest.point = n.location;
+        if (cache.distance > distance) {
+            cache.distance = distance;
+            cache.point = n.location;
         }
 
         if (isLeft(n, p, depth)) {
-            nearest(n.left, p, depth + 1, nearest);
-            if (nearest.distance > distanceSquared(n, p, depth)) {
-                nearest(n.right, p, depth + 1, nearest);
+            nearest(n.left, p, depth + 1, cache);
+            if (cache.distance > distanceSquared(n, p, depth)) {
+                nearest(n.right, p, depth + 1, cache);
             }
         } else {
-            nearest(n.right, p, depth + 1, nearest);
-            if (nearest.distance > distanceSquared(n, p, depth)) {
-                nearest(n.left, p, depth + 1, nearest);
+            nearest(n.right, p, depth + 1, cache);
+            if (cache.distance > distanceSquared(n, p, depth)) {
+                nearest(n.left, p, depth + 1, cache);
             }
         }
     }
@@ -199,6 +190,7 @@ public class KdTree {
         return Math.pow(coordinate(n, depth) - coordinate(p, depth), 2);
     }
 
+    // left or bottom
     private boolean isLeft(Node n, Point2D p, int depth) {
         return coordinate(p, depth) < coordinate(n, depth);
     }
@@ -230,11 +222,11 @@ public class KdTree {
     }
 
 
-    private static class Nearest {
+    private static class DistanceCache {
         private double distance;
         private Point2D point;
 
-        Nearest(double distance, Point2D point) {
+        DistanceCache(double distance, Point2D point) {
             this.distance = distance;
             this.point = point;
         }
