@@ -157,12 +157,12 @@ public class KdTree {
             throw new IllegalArgumentException();
         }
 
-        DistanceCache nearest = new DistanceCache(Double.POSITIVE_INFINITY, null);
+        NearestCache nearest = new NearestCache(Double.POSITIVE_INFINITY, null);
         nearest(root, p, 0, nearest);
         return nearest.point;
     }
 
-    private void nearest(Node n, Point2D p, int depth, DistanceCache cache) {
+    private void nearest(Node n, Point2D p, int depth, NearestCache cache) {
         if (n == null) {
             return;
         }
@@ -222,11 +222,11 @@ public class KdTree {
     }
 
 
-    private static class DistanceCache {
+    private static class NearestCache {
         private double distance;
         private Point2D point;
 
-        DistanceCache(double distance, Point2D point) {
+        NearestCache(double distance, Point2D point) {
             this.distance = distance;
             this.point = point;
         }
