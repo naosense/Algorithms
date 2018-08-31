@@ -138,15 +138,15 @@ public class KdTree {
             return;
         }
 
+        if (rect.contains(n.location)) {
+            points.enqueue(n.location);
+        }
+
         if (isLeft(rect, n.location, depth)) {
             range(n.left, rect, points, depth + 1);
         } else if (isRight(rect, n.location, depth)) {
             range(n.right, rect, points, depth + 1);
         } else {
-            if (rect.contains(n.location)) {
-                points.enqueue(n.location);
-            }
-
             range(n.left, rect, points, depth + 1);
             range(n.right, rect, points, depth + 1);
         }
