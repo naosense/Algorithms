@@ -1,11 +1,10 @@
 package com.pingao.assignment.week5;
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
-
-import java.util.Set;
-import java.util.TreeSet;
 
 
 /**
@@ -13,7 +12,7 @@ import java.util.TreeSet;
  */
 public class KdTree {
     private static final int K = 2;
-    private Node<Double, Point2D> root;
+    private Node root;
     private int size;
 
     // construct an empty set of points
@@ -36,29 +35,38 @@ public class KdTree {
             throw new IllegalArgumentException();
         }
 
-        root = insert(root, p, 0);
-        size++;
+        if (!contains(p)) {
+            root = insert(root, p, 0);
+            size++;
+        }
     }
 
-    private Node<Double, Point2D> insert(Node<Double, Point2D> n, Point2D p, int depth) {
+    private Node insert(Node n, Point2D p, int depth) {
         if (n == null) {
-            return new Node<>(coordinate(p, depth % K), p);
+            return new Node(p);
         }
 
-        double co = coordinate(p, depth % K);
-        if (co < n.key) {
+        double cp = coordinate(p, depth);
+        double cn = coordinate(n, depth);
+        if (cp < cn) {
             n.left = insert(n.left, p, depth + 1);
-        } else if (co > n.key) {
-            n.right = insert(n.right, p, depth + 1);
         } else {
-            n.value = p;
+            if (p.equals(n.location)) {
+                n.location = p;
+            } else {
+                n.right = insert(n.right, p, depth + 1);
+            }
         }
 
         return n;
     }
 
-    private double coordinate(Point2D p, int axis) {
-        return axis == 0 ? p.x() : p.y();
+    private double coordinate(Point2D p, int depth) {
+        return depth % K == 0 ? p.x() : p.y();
+    }
+
+    private double coordinate(Node n, int depth) {
+        return depth % K == 0 ? n.location.x() : n.location.y();
     }
 
     // does the set contain point p?
@@ -70,34 +78,48 @@ public class KdTree {
         return get(root, p, 0) != null;
     }
 
-    private Node<Double, Point2D> get(Node<Double, Point2D> root, Point2D p, int depth) {
-        if (root == null) {
+    private Node get(Node n, Point2D p, int depth) {
+        if (n == null) {
             return null;
         }
 
-        double co = coordinate(p, depth % K);
-        if (co < root.key) {
-            return get(root.left, p, depth + 1);
-        } else if (co > root.key) {
-            return get(root.right, p, depth + 1);
+        double cp = coordinate(p, depth);
+        double cn = coordinate(n, depth);
+        if (cp < cn) {
+            return get(n.left, p, depth + 1);
         } else {
-            return root;
+            if (p.equals(n.location)) {
+                return n;
+            } else {
+                return get(n.right, p, depth + 1);
+            }
         }
     }
 
     // draw all points to standard draw
     public void draw() {
-        draw(root);
+        draw(root, 0);
     }
 
-    private void draw(Node<Double, Point2D> n) {
+    private void draw(Node n, int depth) {
         if (n == null) {
             return;
         }
 
-        StdDraw.point(n.value.x(), n.value.y());
-        draw(n.left);
-        draw(n.right);
+        StdDraw.setPenRadius(0.01);
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.point(n.location.x(), n.location.y());
+        if (depth % K == 0) {
+            StdDraw.setPenRadius();
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.line(n.location.x(), 0, n.location.x(), 1);
+        } else {
+            StdDraw.setPenRadius();
+            StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.line(0, n.location.y(), 1, n.location.y());
+        }
+        draw(n.left, depth + 1);
+        draw(n.right, depth + 1);
     }
 
     // all points that are inside the rectangle (or on the boundary)
@@ -106,24 +128,25 @@ public class KdTree {
             throw new IllegalArgumentException();
         }
 
-        Set<Point2D> points = new TreeSet<>();
+        Queue<Point2D> points = new Queue<>();
         range(root, rect, points, 0);
         return points;
     }
 
-    private void range(Node<Double, Point2D> n, RectHV rect, Set<Point2D> points, int depth) {
+    private void range(Node n, RectHV rect, Queue<Point2D> points, int depth) {
         if (n == null) {
             return;
         }
 
-        if (isLeft(rect, n.value, depth)) {
+        if (isLeft(rect, n.location, depth)) {
             range(n.left, rect, points, depth + 1);
-        } else if (isRight(rect, n.value, depth)) {
+        } else if (isRight(rect, n.location, depth)) {
             range(n.right, rect, points, depth + 1);
         } else {
-            if (rect.contains(n.value)) {
-                points.add(n.value);
+            if (rect.contains(n.location)) {
+                points.enqueue(n.location);
             }
+
             range(n.left, rect, points, depth + 1);
             range(n.right, rect, points, depth + 1);
         }
@@ -148,44 +171,61 @@ public class KdTree {
         return nearest.point;
     }
 
-    private void nearest(Node<Double, Point2D> n, Point2D p, int depth, Nearest nearest) {
+    private void nearest(Node n, Point2D p, int depth, Nearest nearest) {
         if (n == null) {
             return;
         }
 
-        double distance = p.distanceSquaredTo(n.value);
+        double distance = p.distanceSquaredTo(n.location);
         if (nearest.distance > distance) {
             nearest.distance = distance;
-            nearest.point = n.value;
+            nearest.point = n.location;
         }
 
         if (isLeft(n, p, depth)) {
             nearest(n.left, p, depth + 1, nearest);
-        } else if (isRight(n, p, depth)) {
-            nearest(n.right, p, depth + 1, nearest);
+            if (nearest.distance > distanceSquared(n, p, depth)) {
+                nearest(n.right, p, depth + 1, nearest);
+            }
         } else {
-            nearest(n.left, p, depth + 1, nearest);
             nearest(n.right, p, depth + 1, nearest);
+            if (nearest.distance > distanceSquared(n, p, depth)) {
+                nearest(n.left, p, depth + 1, nearest);
+            }
         }
     }
 
-    private boolean isLeft(Node<Double, Point2D> n, Point2D p, int depth) {
-        return depth % K == 0 ? p.x() < n.value.x() : p.y() < n.value.y();
+    private double distanceSquared(Node n, Point2D p, int depth) {
+        return Math.pow(coordinate(n, depth) - coordinate(p, depth), 2);
     }
 
-    private boolean isRight(Node<Double, Point2D> n, Point2D p, int depth) {
-        return depth % K == 0 ? p.x() > n.value.x() : p.y() > n.value.y();
+    private boolean isLeft(Node n, Point2D p, int depth) {
+        return coordinate(p, depth) < coordinate(n, depth);
     }
 
-    private static class Node<K, V> {
-        private Node<K, V> left;
-        private Node<K, V> right;
-        private K key;
-        private V value;
+    public static void main(String[] args) {
+        In in = new In(System.getProperty("user.dir") + "/src/test/resources/week5-test.txt");
+        KdTree kdtree = new KdTree();
 
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            kdtree.insert(p);
+        }
+
+        System.out.println(kdtree.root.location);
+        System.out.println(kdtree.size());
+        System.out.println(kdtree.range(new RectHV(0.8, 0.16, 0.96, 0.45)));
+    }
+
+    private static class Node {
+        private Node left;
+        private Node right;
+        private Point2D location;
+
+        Node(Point2D location) {
+            this.location = location;
         }
     }
 
