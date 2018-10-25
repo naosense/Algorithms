@@ -1,10 +1,14 @@
 package com.pingao.assignment.week6;
 
 import com.pingao.utils.ResourceUtils;
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.RedBlackBST;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -12,6 +16,7 @@ import edu.princeton.cs.algs4.RedBlackBST;
  */
 public class WordNet {
     private final RedBlackBST<String, Integer> nouns = new RedBlackBST<>();
+    private final List<String> words = new ArrayList<>();
     private final Digraph digraph;
 
     // constructor takes the name of the two input files
@@ -20,17 +25,20 @@ public class WordNet {
             throw new IllegalArgumentException("synsets and hypernyms must not be null");
         }
 
+        int n = 0;
         In sin = new In(synsets);
         while (!sin.isEmpty()) {
             String line = sin.readLine();
             if (line.isEmpty()) {
                 continue;
             }
+            n++;
             String[] columns = line.split(",");
             nouns.put(columns[1], Integer.parseInt(columns[0]));
+            words.add(columns[1]);
         }
 
-        digraph = new Digraph(82192);
+        digraph = new Digraph(n);
         In hin = new In(hypernyms);
         while (!hin.isEmpty()) {
             String line = hin.readLine();
@@ -62,19 +70,49 @@ public class WordNet {
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB) {
-        if (!isNoun(nounA) || isNoun(nounB)) {
+        if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException("nounA and nounB must be in wordnet");
         }
-        return 0;
+        Integer a = nouns.get(nounA);
+        Integer b = nouns.get(nounB);
+
+        int distance = 0;
+        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(digraph, a);
+        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(digraph, b);
+        for (int v = 0; v < digraph.V(); v++) {
+            if (ba.hasPathTo(v) && bb.hasPathTo(v)) {
+                int dist = ba.distTo(v) + bb.distTo(v);
+                if (distance == 0 || distance > dist) {
+                    distance = dist;
+                }
+            }
+        }
+        return distance;
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
-        if (!isNoun(nounA) || isNoun(nounB)) {
+        if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException("nounA and nounB must be in wordnet");
         }
-        return null;
+        Integer a = nouns.get(nounA);
+        Integer b = nouns.get(nounB);
+
+        int distance = 0;
+        String sap = null;
+        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(digraph, a);
+        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(digraph, b);
+        for (int v = 0; v < digraph.V(); v++) {
+            if (ba.hasPathTo(v) && bb.hasPathTo(v)) {
+                int dist = ba.distTo(v) + bb.distTo(v);
+                if (distance == 0 || distance > dist) {
+                    distance = dist;
+                    sap = words.get(v);
+                }
+            }
+        }
+        return sap;
     }
 
     // do unit testing of this class
@@ -82,8 +120,6 @@ public class WordNet {
         WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
                                       ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
 
-        wordNet.nouns().forEach(System.out::println);
-
-        System.out.println(wordNet.digraph);
+        System.out.println(wordNet.sap("miracle", "group_action"));
     }
 }
