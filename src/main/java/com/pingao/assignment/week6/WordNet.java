@@ -56,6 +56,16 @@ public class WordNet {
         if (cycle.hasCycle()) {
             throw new IllegalArgumentException("Digraph is not DAG");
         }
+
+        boolean isRooted = false;
+        for (int v = 0; v < G.V(); v++) {
+            if (G.indegree(v) == 0 && G.outdegree(v) > 0) {
+                isRooted = true;
+            }
+        }
+        if (!isRooted) {
+            throw new IllegalArgumentException("Digraph is not rooted");
+        }
     }
 
     // returns all WordNet nouns
@@ -71,7 +81,7 @@ public class WordNet {
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB) {
         if (!isNoun(nounA) || !isNoun(nounB)) {
-            throw new IllegalArgumentException("nounA and nounB must be in wordnet");
+            throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
         Integer a = nouns.get(nounA);
         Integer b = nouns.get(nounB);
@@ -94,7 +104,7 @@ public class WordNet {
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
         if (!isNoun(nounA) || !isNoun(nounB)) {
-            throw new IllegalArgumentException("nounA and nounB must be in wordnet");
+            throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
         Integer a = nouns.get(nounA);
         Integer b = nouns.get(nounB);
