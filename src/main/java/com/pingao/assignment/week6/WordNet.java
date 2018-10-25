@@ -17,7 +17,7 @@ import java.util.List;
 public class WordNet {
     private final RedBlackBST<String, Integer> nouns = new RedBlackBST<>();
     private final List<String> words = new ArrayList<>();
-    private final Digraph digraph;
+    private final Digraph G;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
@@ -38,7 +38,7 @@ public class WordNet {
             words.add(columns[1]);
         }
 
-        digraph = new Digraph(n);
+        G = new Digraph(n);
         In hin = new In(hypernyms);
         while (!hin.isEmpty()) {
             String line = hin.readLine();
@@ -47,12 +47,12 @@ public class WordNet {
                 continue;
             }
             for (int i = 1; i < vw.length; i++) {
-                digraph.addEdge(Integer.parseInt(vw[0]), Integer.parseInt(vw[i]));
+                G.addEdge(Integer.parseInt(vw[0]), Integer.parseInt(vw[i]));
             }
         }
 
         // check cycle
-        DirectedCycle cycle = new DirectedCycle(digraph);
+        DirectedCycle cycle = new DirectedCycle(G);
         if (cycle.hasCycle()) {
             throw new IllegalArgumentException("Digraph is not DAG");
         }
@@ -76,13 +76,13 @@ public class WordNet {
         Integer a = nouns.get(nounA);
         Integer b = nouns.get(nounB);
 
-        int distance = 0;
-        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(digraph, a);
-        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(digraph, b);
-        for (int v = 0; v < digraph.V(); v++) {
+        int distance = -1;
+        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(G, a);
+        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(G, b);
+        for (int v = 0; v < G.V(); v++) {
             if (ba.hasPathTo(v) && bb.hasPathTo(v)) {
                 int dist = ba.distTo(v) + bb.distTo(v);
-                if (distance == 0 || distance > dist) {
+                if (distance == -1 || distance > dist) {
                     distance = dist;
                 }
             }
@@ -99,14 +99,14 @@ public class WordNet {
         Integer a = nouns.get(nounA);
         Integer b = nouns.get(nounB);
 
-        int distance = 0;
+        int distance = -1;
         String sap = null;
-        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(digraph, a);
-        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(digraph, b);
-        for (int v = 0; v < digraph.V(); v++) {
+        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(G, a);
+        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(G, b);
+        for (int v = 0; v < G.V(); v++) {
             if (ba.hasPathTo(v) && bb.hasPathTo(v)) {
                 int dist = ba.distTo(v) + bb.distTo(v);
-                if (distance == 0 || distance > dist) {
+                if (distance == -1 || distance > dist) {
                     distance = dist;
                     sap = words.get(v);
                 }
