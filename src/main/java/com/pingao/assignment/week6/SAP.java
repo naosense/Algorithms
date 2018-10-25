@@ -14,7 +14,7 @@ public class SAP {
         if (G == null) {
             throw new IllegalArgumentException("Digraph can't be null");
         }
-        this.G = G;
+        this.G = new Digraph(G);
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
