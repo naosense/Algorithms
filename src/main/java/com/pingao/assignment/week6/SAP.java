@@ -9,6 +9,7 @@ import edu.princeton.cs.algs4.Digraph;
  */
 public class SAP {
     private final Digraph G;
+
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
         if (G == null) {
@@ -53,7 +54,6 @@ public class SAP {
             }
         }
         return sap;
-
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
@@ -94,8 +94,8 @@ public class SAP {
         return sap;
     }
 
-    private void validateRange(int v) {
-        if (v < 0 || v > G.V()) {
+    private void validateRange(Integer v) {
+        if (v == null || v < 0 || v > G.V()) {
             throw new IllegalArgumentException("Vertex is not between 0 ~ " + G.V());
         }
     }
@@ -104,7 +104,7 @@ public class SAP {
         if (v == null) {
             throw new IllegalArgumentException("Vertex can't be null");
         }
-        for (int i : v) {
+        for (Integer i : v) {
             validateRange(i);
         }
     }
