@@ -1,12 +1,5 @@
 package com.pingao.assignment.week6;
 
-import com.pingao.utils.ResourceUtils;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
-
-import java.util.Arrays;
-
-
 /**
  * Created by pingao on 2018/10/23.
  */
@@ -44,14 +37,14 @@ public class Outcast {
     }
 
     // see test client below
-    public static void main(String[] args) {
-        WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
-                                      ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
-        Outcast outcast = new Outcast(wordNet);
-        String t = ResourceUtils.getTestResourcePath("week6-outcast5.txt");
-        In in = new In(t);
-        String[] nouns = in.readAllStrings();
-        System.out.println(Arrays.toString(nouns));
-        StdOut.println(t + ": " + outcast.outcast(nouns));
-    }
+    //public static void main(String[] args) {
+    //    WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
+    //                                  ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
+    //    Outcast outcast = new Outcast(wordNet);
+    //    String t = ResourceUtils.getTestResourcePath("week6-outcast5.txt");
+    //    In in = new In(t);
+    //    String[] nouns = in.readAllStrings();
+    //    System.out.println(Arrays.toString(nouns));
+    //    StdOut.println(t + ": " + outcast.outcast(nouns));
+    //}
 }

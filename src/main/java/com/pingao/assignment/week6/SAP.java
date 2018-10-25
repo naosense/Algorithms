@@ -1,10 +1,7 @@
 package com.pingao.assignment.week6;
 
-import com.pingao.utils.ResourceUtils;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
 
 
 /**
@@ -107,20 +104,20 @@ public class SAP {
         if (v == null) {
             throw new IllegalArgumentException("Vertex can't be null");
         }
-        for (Integer i : v) {
+        for (int i : v) {
             validateRange(i);
         }
     }
 
     // do unit testing of this class
-    public static void main(String[] args) {
-        In in = new In(ResourceUtils.getTestResourcePath("week6-digraph1.txt"));
-        Digraph G = new Digraph(in);
-        SAP sap = new SAP(G);
-        int v = 1;
-        int w = 1;
-        int length   = sap.length(v, w);
-        int ancestor = sap.ancestor(v, w);
-        StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
-    }
+    //public static void main(String[] args) {
+    //    In in = new In(ResourceUtils.getTestResourcePath("week6-digraph1.txt"));
+    //    Digraph G = new Digraph(in);
+    //    SAP sap = new SAP(G);
+    //    int v = 1;
+    //    int w = 1;
+    //    int length   = sap.length(v, w);
+    //    int ancestor = sap.ancestor(v, w);
+    //    StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+    //}
 }

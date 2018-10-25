@@ -1,6 +1,5 @@
 package com.pingao.assignment.week6;
 
-import com.pingao.utils.ResourceUtils;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
@@ -83,8 +82,8 @@ public class WordNet {
         if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
-        Integer a = nouns.get(nounA);
-        Integer b = nouns.get(nounB);
+        int a = nouns.get(nounA);
+        int b = nouns.get(nounB);
 
         int distance = -1;
         BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(G, a);
@@ -106,8 +105,8 @@ public class WordNet {
         if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
-        Integer a = nouns.get(nounA);
-        Integer b = nouns.get(nounB);
+        int a = nouns.get(nounA);
+        int b = nouns.get(nounB);
 
         int distance = -1;
         String sap = null;
@@ -126,10 +125,10 @@ public class WordNet {
     }
 
     // do unit testing of this class
-    public static void main(String[] args) {
-        WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
-                                      ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
-
-        System.out.println(wordNet.sap("miracle", "group_action"));
-    }
+    //public static void main(String[] args) {
+    //    WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
+    //                                  ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
+    //
+    //    System.out.println(wordNet.sap("miracle", "group_action"));
+    //}
 }
