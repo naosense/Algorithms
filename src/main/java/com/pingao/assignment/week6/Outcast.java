@@ -1,5 +1,12 @@
 package com.pingao.assignment.week6;
 
+import com.pingao.utils.ResourceUtils;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.Arrays;
+
+
 /**
  * Created by pingao on 2018/10/23.
  */
@@ -20,15 +27,19 @@ public class Outcast {
             throw new IllegalArgumentException();
         }
         int outcast = -1;
-        int distance = -1;
+        int distance = 0;
         for (int i = 0; i < nouns.length; i++) {
+            String n1 = nouns[i];
             int d = 0;
-            for (int j = i + 1; j < nouns.length; j++) {
-                String n1 = nouns[i];
+            for (int j = 0; j < nouns.length; j++) {
+                if (j == i) {
+                    continue;
+                }
                 String n2 = nouns[j];
                 d += wordNet.distance(n1, n2);
+                System.out.printf("%s %s %d\n", n1, n2, wordNet.distance(n1, n2));
             }
-            if (distance == -1 || distance < d) {
+            if (distance < d) {
                 distance = d;
                 outcast = i;
             }
@@ -37,14 +48,14 @@ public class Outcast {
     }
 
     // see test client below
-    //public static void main(String[] args) {
-    //    WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
-    //                                  ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
-    //    Outcast outcast = new Outcast(wordNet);
-    //    String t = ResourceUtils.getTestResourcePath("week6-outcast5.txt");
-    //    In in = new In(t);
-    //    String[] nouns = in.readAllStrings();
-    //    System.out.println(Arrays.toString(nouns));
-    //    StdOut.println(t + ": " + outcast.outcast(nouns));
-    //}
+    public static void main(String[] args) {
+        WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
+                                      ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
+        Outcast outcast = new Outcast(wordNet);
+        String t = ResourceUtils.getTestResourcePath("week6-outcast8.txt");
+        In in = new In(t);
+        String[] nouns = in.readAllStrings();
+        System.out.println(Arrays.toString(nouns));
+        StdOut.println(t + ": " + outcast.outcast(nouns));
+    }
 }

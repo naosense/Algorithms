@@ -1,5 +1,6 @@
 package com.pingao.assignment.week6;
 
+import com.pingao.utils.ResourceUtils;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
@@ -33,8 +34,12 @@ public class WordNet {
             }
             n++;
             String[] columns = line.split(",");
-            nouns.put(columns[1], Integer.parseInt(columns[0]));
             words.add(columns[1]);
+            for (String w : columns[1].split(" ")) {
+                if (!nouns.contains(w)) {
+                    nouns.put(w, Integer.parseInt(columns[0]));
+                }
+            }
         }
 
         G = new Digraph(n);
@@ -106,7 +111,9 @@ public class WordNet {
             throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
         int a = nouns.get(nounA);
+        System.out.println("a = " + a);
         int b = nouns.get(nounB);
+        System.out.println("b = " + b);
 
         int distance = -1;
         String sap = null;
@@ -118,6 +125,7 @@ public class WordNet {
                 if (distance == -1 || distance > dist) {
                     distance = dist;
                     sap = words.get(v);
+                    System.out.println("v = " + v + ", sap = " + sap);
                 }
             }
         }
@@ -125,10 +133,12 @@ public class WordNet {
     }
 
     // do unit testing of this class
-    //public static void main(String[] args) {
-    //    WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
-    //                                  ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
-    //
-    //    System.out.println(wordNet.sap("miracle", "group_action"));
-    //}
+    public static void main(String[] args) {
+        WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
+                                      ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
+
+        //System.out.println(wordNet.sap("miracle", "group_action"));
+        System.out.println(wordNet.sap("tea", "coffee"));
+        System.out.println(wordNet.sap("increase", "damage"));
+    }
 }
