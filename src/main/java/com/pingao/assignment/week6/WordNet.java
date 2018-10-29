@@ -66,13 +66,13 @@ public class WordNet {
             throw new IllegalArgumentException("Digraph is not DAG");
         }
 
-        boolean isRooted = false;
+        int root = 0;
         for (int v = 0; v < G.V(); v++) {
-            if (G.indegree(v) == 0 && G.outdegree(v) > 0) {
-                isRooted = true;
+            if (G.indegree(v) > 0 && G.outdegree(v) == 0) {
+                root++;
             }
         }
-        if (!isRooted) {
+        if (root != 1) {
             throw new IllegalArgumentException("Digraph is not rooted");
         }
 
@@ -117,8 +117,8 @@ public class WordNet {
 
     // do unit testing of this class
     public static void main(String[] args) {
-        WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
-                                      ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
+        WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets3.txt"),
+                                      ResourceUtils.getTestResourcePath("week6-hypernyms3InvalidTwoRoots.txt"));
 
         Logger.info(wordNet.sap("tea", "coffee"));
         Logger.info(wordNet.sap("increase", "damage"));
