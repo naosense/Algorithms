@@ -1,11 +1,12 @@
 package com.pingao.assignment.week6;
 
 import com.pingao.utils.ResourceUtils;
-import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
+import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.RedBlackBST;
+import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +16,10 @@ import java.util.List;
  * Created by pingao on 2018/10/23.
  */
 public class WordNet {
-    private final RedBlackBST<String, Integer> nouns = new RedBlackBST<>();
+    private final RedBlackBST<String, Bag<Integer>> nouns = new RedBlackBST<>();
     private final List<String> words = new ArrayList<>();
-    private final Digraph G;
+    // private final Digraph G;
+    private final SAP sap;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
@@ -36,13 +38,16 @@ public class WordNet {
             String[] columns = line.split(",");
             words.add(columns[1]);
             for (String w : columns[1].split(" ")) {
-                if (!nouns.contains(w)) {
-                    nouns.put(w, Integer.parseInt(columns[0]));
+                Bag<Integer> index = nouns.get(w);
+                if (index == null) {
+                    index = new Bag<>();
                 }
+                index.add(Integer.parseInt(columns[0]));
+                nouns.put(w, index);
             }
         }
 
-        G = new Digraph(n);
+        Digraph G = new Digraph(n);
         In hin = new In(hypernyms);
         while (!hin.isEmpty()) {
             String line = hin.readLine();
@@ -70,6 +75,8 @@ public class WordNet {
         if (!isRooted) {
             throw new IllegalArgumentException("Digraph is not rooted");
         }
+
+        sap = new SAP(G);
     }
 
     // returns all WordNet nouns
@@ -87,21 +94,11 @@ public class WordNet {
         if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
-        int a = nouns.get(nounA);
-        int b = nouns.get(nounB);
 
-        int distance = -1;
-        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(G, a);
-        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(G, b);
-        for (int v = 0; v < G.V(); v++) {
-            if (ba.hasPathTo(v) && bb.hasPathTo(v)) {
-                int dist = ba.distTo(v) + bb.distTo(v);
-                if (distance == -1 || distance > dist) {
-                    distance = dist;
-                }
-            }
-        }
-        return distance;
+        Bag<Integer> a = nouns.get(nounA);
+        Bag<Integer> b = nouns.get(nounB);
+
+        return sap.length(a, b);
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -110,26 +107,12 @@ public class WordNet {
         if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException(nounA + " and " + nounB + " is not in wordnet");
         }
-        int a = nouns.get(nounA);
-        System.out.println("a = " + a);
-        int b = nouns.get(nounB);
-        System.out.println("b = " + b);
 
-        int distance = -1;
-        String sap = null;
-        BreadthFirstDirectedPaths ba = new BreadthFirstDirectedPaths(G, a);
-        BreadthFirstDirectedPaths bb = new BreadthFirstDirectedPaths(G, b);
-        for (int v = 0; v < G.V(); v++) {
-            if (ba.hasPathTo(v) && bb.hasPathTo(v)) {
-                int dist = ba.distTo(v) + bb.distTo(v);
-                if (distance == -1 || distance > dist) {
-                    distance = dist;
-                    sap = words.get(v);
-                    System.out.println("v = " + v + ", sap = " + sap);
-                }
-            }
-        }
-        return sap;
+        Bag<Integer> a = nouns.get(nounA);
+        Bag<Integer> b = nouns.get(nounB);
+
+        int index = sap.ancestor(a, b);
+        return index == -1 ? null : words.get(index);
     }
 
     // do unit testing of this class
@@ -137,8 +120,7 @@ public class WordNet {
         WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
                                       ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
 
-        //System.out.println(wordNet.sap("miracle", "group_action"));
-        System.out.println(wordNet.sap("tea", "coffee"));
-        System.out.println(wordNet.sap("increase", "damage"));
+        Logger.info(wordNet.sap("tea", "coffee"));
+        Logger.info(wordNet.sap("increase", "damage"));
     }
 }

@@ -2,7 +2,7 @@ package com.pingao.assignment.week6;
 
 import com.pingao.utils.ResourceUtils;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
+import org.pmw.tinylog.Logger;
 
 import java.util.Arrays;
 
@@ -37,7 +37,6 @@ public class Outcast {
                 }
                 String n2 = nouns[j];
                 d += wordNet.distance(n1, n2);
-                System.out.printf("%s %s %d\n", n1, n2, wordNet.distance(n1, n2));
             }
             if (distance < d) {
                 distance = d;
@@ -52,10 +51,9 @@ public class Outcast {
         WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
                                       ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
         Outcast outcast = new Outcast(wordNet);
-        String t = ResourceUtils.getTestResourcePath("week6-outcast8.txt");
+        String t = ResourceUtils.getTestResourcePath("week6-outcast11.txt");
         In in = new In(t);
         String[] nouns = in.readAllStrings();
-        System.out.println(Arrays.toString(nouns));
-        StdOut.println(t + ": " + outcast.outcast(nouns));
+        Logger.info("nouns {} outcast {}", Arrays.toString(nouns), outcast.outcast(nouns));
     }
 }
