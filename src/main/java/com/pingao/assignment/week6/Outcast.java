@@ -31,11 +31,7 @@ public class Outcast {
         for (int i = 0; i < nouns.length; i++) {
             String n1 = nouns[i];
             int d = 0;
-            for (int j = 0; j < nouns.length; j++) {
-                if (j == i) {
-                    continue;
-                }
-                String n2 = nouns[j];
+            for (String n2 : nouns) {
                 d += wordNet.distance(n1, n2);
             }
             if (distance < d) {
@@ -51,7 +47,7 @@ public class Outcast {
         WordNet wordNet = new WordNet(ResourceUtils.getTestResourcePath("week6-synsets.txt"),
                                       ResourceUtils.getTestResourcePath("week6-hypernyms.txt"));
         Outcast outcast = new Outcast(wordNet);
-        String t = ResourceUtils.getTestResourcePath("week6-outcast11.txt");
+        String t = ResourceUtils.getTestResourcePath("week6-outcast8.txt");
         In in = new In(t);
         String[] nouns = in.readAllStrings();
         Logger.info("nouns {} outcast {}", Arrays.toString(nouns), outcast.outcast(nouns));
