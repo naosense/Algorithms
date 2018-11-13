@@ -6,15 +6,16 @@ import java.util.Arrays;
 
 
 /**
+ * 这个作业中的findHorizontalSeam，findHorizontalSeam，
+ * removeHorizontalSeam，removeVerticalSeam是参考
+ * https://github.com/michael0905/SeamCarver，图算法这章
+ * 有点懵，作业做起来很吃力，截至日期又卡在那，而且作业必须得从前往后做，
+ * 所以作为权宜之计先抄别人的，等后面的完了回来再做。
  * Created by pingao on 2018/11/8.
  */
 public class SeamCarver {
-    // private final Picture picture;
 
     private int[][] rgb;
-    // private double[][] energy;
-    // private int width;
-    // private int height;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
@@ -99,12 +100,62 @@ public class SeamCarver {
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-
+        rgb = transpose(rgb);
+        int[] seam = findVerticalSeam();
+        rgb = transpose(rgb);
+        return seam;
     }
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
+        int n = this.width() * this.height();
+        int[] seam = new int[this.height()];
+        int[] nodeTo = new int[n];
+        double[] distTo = new double[n];
+        for (int i = 0; i < n; i++) {
+            if (i < width())
+                distTo[i] = 0;
+            else
+                distTo[i] = Double.POSITIVE_INFINITY;
+        }
+        for (int i = 0; i < height(); i++) {
+            for (int j = 0; j < width(); j++) {
+                for (int k = -1; k <= 1; k++) {
+                    if (j + k < 0 || j + k > this.width() - 1 || i + 1 < 0 || i + 1 > this.height() - 1) {
+                    } else {
+                        if (distTo[index(j + k, i + 1)] > distTo[index(j, i)] + energy(j, i)) {
+                            distTo[index(j + k, i + 1)] = distTo[index(j, i)] + energy(j, i);
+                            nodeTo[index(j + k, i + 1)] = index(j, i);
+                        }
+                    }
+                }
+            }
+        }
 
+        // find min dist in the last row
+        double min = Double.POSITIVE_INFINITY;
+        int index = -1;
+        for (int j = 0; j < width(); j++) {
+            if (distTo[j + width() * (height() - 1)] < min) {
+                index = j + width() * (height() - 1);
+                min = distTo[j + width() * (height() - 1)];
+            }
+        }
+
+        // find seam one by one
+        for (int j = 0; j < height(); j++) {
+            int y = height() - j - 1;
+            int x = index - y * width();
+            seam[height() - 1 - j] = x;
+            index = nodeTo[index];
+        }
+
+        return seam;
+
+    }
+
+    private int index(int x, int y) {
+        return width() * y + x;
     }
 
     private static int[][] transpose(int[][] a) {
@@ -125,6 +176,29 @@ public class SeamCarver {
         if (seam == null) {
             throw new IllegalArgumentException("seam can't be null");
         }
+        if (height() <= 1) throw new IllegalArgumentException();
+        if (seam.length != width()) throw new IllegalArgumentException();
+
+        for (int i = 0; i < seam.length; i++) {
+            if (seam[i] < 0 || seam[i] > height() - 1)
+                throw new IllegalArgumentException();
+            if (i < width() - 1 && Math.pow(seam[i] - seam[i + 1], 2) > 1)
+                throw new IllegalArgumentException();
+        }
+
+        int[][] updatedColor = new int[width()][height() - 1];
+        for (int i = 0; i < seam.length; i++) {
+            if (seam[i] == 0) {
+                System.arraycopy(this.rgb[i], seam[i] + 1, updatedColor[i], 0, height() - 1);
+            } else if (seam[i] == height() - 1) {
+                System.arraycopy(this.rgb[i], 0, updatedColor[i], 0, height() - 1);
+            } else {
+                System.arraycopy(this.rgb[i], 0, updatedColor[i], 0, seam[i]);
+                System.arraycopy(this.rgb[i], seam[i] + 1, updatedColor[i], seam[i], height() - seam[i] - 1);
+            }
+
+        }
+        this.rgb = updatedColor;
     }
 
     // remove vertical seam from current picture
@@ -132,6 +206,9 @@ public class SeamCarver {
         if (seam == null) {
             throw new IllegalArgumentException("seam can't be null");
         }
+        this.rgb = transpose(this.rgb);
+        removeHorizontalSeam(seam);
+        this.rgb = transpose(this.rgb);
     }
 
     public static void main(String[] args) {
