@@ -90,12 +90,14 @@ public class BaseballElimination {
         validateNotNull(team);
         validateTeam(team);
 
+        int winsUpperBound = wins(team) + remaining(team);
+
         // trivial elimination
         for (String t : teams()) {
             if (t.equals(team)) {
                 continue;
             }
-            if (wins(team) + remaining(team) < wins(t)) {
+            if (winsUpperBound < wins(t)) {
                 return true;
             }
         }
@@ -106,7 +108,6 @@ public class BaseballElimination {
         int teamLeft = n - 1;
         int ends = 2;
         int V = gamePairs + teamLeft + ends;
-        int winsUpperBound = wins(team) + remaining(team);
         int gameCountOfRemaining = 0;
         int k = 0;
 
@@ -151,12 +152,14 @@ public class BaseballElimination {
     public Iterable<String> certificateOfElimination(String team) {
         validateNotNull(team);
 
+        int winsUpperBound = wins(team) + remaining(team);
+
         // trivial elimination
         for (String t : teams()) {
             if (t.equals(team)) {
                 continue;
             }
-            if (wins(team) + remaining(team) < wins(t)) {
+            if (winsUpperBound < wins(t)) {
                 List<String> subset = new ArrayList<>();
                 subset.add(t);
                 return subset;
@@ -169,7 +172,6 @@ public class BaseballElimination {
         int teamLeft = n - 1;
         int ends = 2;
         int V = gamePairs + teamLeft + ends;
-        int winsUpperBound = wins(team) + remaining(team);
         int gameCountOfRemaining = 0;
         int k = 0;
 
