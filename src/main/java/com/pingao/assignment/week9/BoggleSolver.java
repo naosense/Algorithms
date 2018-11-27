@@ -93,6 +93,10 @@ public class BoggleSolver {
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
+        if (word == null) {
+            throw new IllegalArgumentException("word can't be null");
+        }
+
         if (!tri.contains(word)) {
             return 0;
         }
