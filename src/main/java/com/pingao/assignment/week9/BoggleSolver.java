@@ -93,16 +93,20 @@ public class BoggleSolver {
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
-        int l = word.length();
-        if (l < 3) {
+        if (!tri.contains(word)) {
             return 0;
-        } else if (l < 5) {
+        }
+
+        int length = word.length();
+        if (length < 3) {
+            return 0;
+        } else if (length < 5) {
             return 1;
-        } else if (l < 6) {
+        } else if (length < 6) {
             return 2;
-        } else if (l < 7) {
+        } else if (length < 7) {
             return 3;
-        } else if (l < 8) {
+        } else if (length < 8) {
             return 5;
         } else {
             return 11;
