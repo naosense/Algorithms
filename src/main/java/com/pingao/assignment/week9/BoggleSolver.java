@@ -31,13 +31,13 @@ public class BoggleSolver {
         Set<String> words = new HashSet<>();
         for (int r = 0; r < board.rows(); r++) {
             for (int c = 0; c < board.cols(); c++) {
-                dfs(board, new StringBuilder(), r, c, words, new boolean[board.rows()][board.cols()]);
+                dfs(board, null, new StringBuilder(), r, c, words, new boolean[board.rows()][board.cols()]);
             }
         }
         return words;
     }
 
-    private void dfs(BoggleBoard board, StringBuilder word, int row, int col, Set<String> words, boolean[][] marked) {
+    private void dfs(BoggleBoard board, BoggleTST.Node<Integer> node, StringBuilder word, int row, int col, Set<String> words, boolean[][] marked) {
         marked[row][col] = true;
         char letter = board.getLetter(row, col);
         if (letter == 'Q') {
@@ -47,7 +47,10 @@ public class BoggleSolver {
         }
 
         String ws = word.toString();
-        if (!tri.hasKeysWithPrefix(ws)) {
+        int d = letter == 'Q' ? ws.length() - 2 : ws.length() - 1;
+        BoggleTST.Node<Integer> root = tri.getNodeWithPrefix(node, ws, d);
+
+        if (root == null) {
             return;
         }
 
@@ -68,7 +71,7 @@ public class BoggleSolver {
                 }
 
                 if (!marked[r][c]) {
-                    dfs(board, word, r, c, words, marked);
+                    dfs(board, root, word, r, c, words, marked);
                     // 删掉尾部字符，如果是Q的话，要删除两次
                     if (board.getLetter(r, c) == 'Q') {
                         word.deleteCharAt(word.length() - 1);

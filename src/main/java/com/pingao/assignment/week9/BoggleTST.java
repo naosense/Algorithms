@@ -162,12 +162,18 @@ public class BoggleTST<Value> {
         if (prefix == null) {
             throw new IllegalArgumentException("calls keysWithPrefix() with null argument");
         }
-        Queue<String> queue = new Queue<String>();
         Node<Value> x = get(root, prefix, 0);
         if (x == null) return false;
         if (x.val != null) return true;
         return find(x.mid, new StringBuilder(prefix));
-        // return !queue.isEmpty();
+    }
+
+    public Node<Value> getNodeWithPrefix(Node<Value> root, String prefix, int d) {
+        if (prefix == null) {
+            throw new IllegalArgumentException("calls keysWithPrefix() with null argument");
+        }
+
+        return get(root == null ? this.root : root.mid, prefix, d);
     }
 
     private boolean find(Node<Value> x, StringBuilder prefix) {
