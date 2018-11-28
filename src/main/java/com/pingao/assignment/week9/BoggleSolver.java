@@ -12,7 +12,7 @@ import java.util.Set;
  * Created by pingao on 2018/11/26.
  */
 public class BoggleSolver {
-    private final BoggleTST<Integer> tri = new BoggleTST<>();
+    private final BoggleTrieST<Integer> tri = new BoggleTrieST<>();
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
@@ -37,7 +37,7 @@ public class BoggleSolver {
         return words;
     }
 
-    private void dfs(BoggleBoard board, BoggleTST.Node<Integer> node, StringBuilder word, int row, int col, Set<String> words, boolean[][] marked) {
+    private void dfs(BoggleBoard board, BoggleTrieST.Node node, StringBuilder word, int row, int col, Set<String> words, boolean[][] marked) {
         marked[row][col] = true;
         char letter = board.getLetter(row, col);
         if (letter == 'Q') {
@@ -48,7 +48,7 @@ public class BoggleSolver {
 
         String ws = word.toString();
         int d = letter == 'Q' ? ws.length() - 2 : ws.length() - 1;
-        BoggleTST.Node<Integer> root = tri.getNodeWithPrefix(node, ws, d);
+        BoggleTrieST.Node root = tri.getNodeWithPrefix(node, ws, d);
 
         if (root == null) {
             return;
