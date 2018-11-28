@@ -3,7 +3,6 @@ package com.pingao.assignment.week9;
 import com.pingao.utils.ResourceUtils;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.TST;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +12,7 @@ import java.util.Set;
  * Created by pingao on 2018/11/26.
  */
 public class BoggleSolver {
-    private final TST<Integer> tri = new TST<>();
+    private final BoggleTST<Integer> tri = new BoggleTST<>();
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
@@ -47,19 +46,13 @@ public class BoggleSolver {
             word.append(letter);
         }
 
-        int size = 0;
         String ws = word.toString();
-        Iterable<String> prefix = tri.keysWithPrefix(ws);
-        for (String w : prefix) {
-            // 长度大于2的才行？
-            if (w.equals(ws) && w.length() > 2) {
-                words.add(ws);
-            }
-            size++;
+        if (!tri.hasKeysWithPrefix(ws)) {
+            return;
         }
 
-        if (size == 0) {
-            return;
+        if (ws.length() > 2 && tri.contains(ws)) {
+            words.add(ws);
         }
 
         // 计算邻接元素的行和列边界
