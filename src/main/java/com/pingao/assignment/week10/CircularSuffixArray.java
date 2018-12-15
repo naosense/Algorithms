@@ -4,8 +4,10 @@ package com.pingao.assignment.week10;
  * Created by pingao on 2018/12/10.
  */
 public class CircularSuffixArray {
-    private String s;
-    private int[] index;
+    private static final int R = 256;   // extend ASCII alphabet size
+
+    private final String s;
+    private final int[] index;
 
     // circular suffix array of s
     public CircularSuffixArray(String s) {
@@ -36,7 +38,6 @@ public class CircularSuffixArray {
     // lsd sort
     private void sort(int[] a, int w) {
         int n = length();
-        int R = 256;   // extend ASCII alphabet size
         int[] aux = new int[n];
 
         for (int d = w - 1; d >= 0; d--) {

@@ -8,6 +8,7 @@ import edu.princeton.cs.algs4.BinaryStdOut;
  * Created by pingao on 2018/12/10.
  */
 public class MoveToFront {
+    private static final int R = 256;
     // apply move-to-front encoding, reading from standard input and writing to standard output
     public static void encode() {
         char[] extendAscii = initExtendAscii();
@@ -42,8 +43,8 @@ public class MoveToFront {
     }
 
     private static char[] initExtendAscii() {
-        char[] extendAscii = new char[256];
-        for (int i = 0; i < 256; i++) {
+        char[] extendAscii = new char[R];
+        for (int i = 0; i < R; i++) {
             extendAscii[i] = (char) i;
         }
         return extendAscii;
@@ -52,15 +53,11 @@ public class MoveToFront {
     // if args[0] is '-', apply move-to-front encoding
     // if args[0] is '+', apply move-to-front decoding
     public static void main(String[] args) {
-        switch (args[0]) {
-            case "-":
-                encode();
-                break;
-            case "+":
-                decode();
-                break;
-            default:
-                throw new IllegalArgumentException("args[0] must be '-' or '+'");
+        if ("-".equals(args[0])) {
+            encode();
+        }
+        if ("+".equals(args[0])) {
+            decode();
         }
     }
 }
