@@ -66,9 +66,9 @@ public class CircularSuffixArray {
 
     // unit testing (required)
     public static void main(String[] args) {
-        CircularSuffixArray suffixArray = new CircularSuffixArray("ABRACADABRA!");
-        for (int i = 0; i < suffixArray.length(); i++) {
-            System.out.println(suffixArray.index(i));
+        CircularSuffixArray csa = new CircularSuffixArray("ABRACADABRA!");
+        for (int i = 0; i < csa.length(); i++) {
+            System.out.println(csa.index(i));
         }
     }
 }
