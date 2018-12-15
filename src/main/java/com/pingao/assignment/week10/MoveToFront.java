@@ -24,12 +24,6 @@ public class MoveToFront {
         BinaryStdOut.close();
     }
 
-    private static void moveToFront(char[] chars, int index) {
-        char c = chars[index];
-        System.arraycopy(chars, 0, chars, 1, index);
-        chars[0] = c;
-    }
-
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
         char[] extendAscii = initExtendAscii();
@@ -39,6 +33,12 @@ public class MoveToFront {
             moveToFront(extendAscii, i);
         }
         BinaryStdOut.close();
+    }
+
+    private static void moveToFront(char[] chars, int index) {
+        char c = chars[index];
+        System.arraycopy(chars, 0, chars, 1, index);
+        chars[0] = c;
     }
 
     private static char[] initExtendAscii() {
